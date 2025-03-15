@@ -1,0 +1,667 @@
+:root {
+    --primary-bg: #2c3e50;
+    --secondary-bg: #34495e;
+    --accent-color: #3498db;
+    --hover-color: #2ecc71;
+    --text-color: #ecf0f1;
+    --text-secondary: #bdc3c7;
+    --card-bg: rgba(52, 73, 94, 0.8);
+    --input-bg: rgba(44, 62, 80, 0.7);
+    --error-color: #e74c3c;
+    --success-color: #2ecc71;
+    --border-radius: 12px;
+    --transition-speed: 0.3s;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--primary-bg);
+    height: 100dvh;
+    overflow: hidden;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text-color);
+}
+.message-box{
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 3rem;
+    background-color: #2c3e50;
+    box-shadow: #3498db;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+}
+
+.flex {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    width: 100%;
+    height: 100%;
+}
+
+.navbar-top{
+    position: absolute;
+
+}
+/* CHANGE: Improved sidebar styling */
+.select-user-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 100%;
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background-color: var(--secondary-bg);
+    position: relative;
+}
+
+/* CHANGE: Added search box styling */
+.search-box {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--secondary-bg);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px 15px;
+    border-radius: var(--border-radius);
+    border: none;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    font-size: 14px;
+}
+
+.search-input::placeholder {
+    color: var(--text-secondary);
+}
+
+/* CHANGE: Improved scrollbar styling */
+.select-user-bar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.select-user-bar::-webkit-scrollbar-track {
+    background: var(--secondary-bg);
+}
+
+.select-user-bar::-webkit-scrollbar-thumb {
+    background: var(--accent-color);
+    border-radius: 10px;
+}
+
+.select-user-bar::-webkit-scrollbar-thumb:hover {
+    background: var(--hover-color);
+}
+
+/* CHANGE: Enhanced chat card styling */
+.chat-card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-radius: var(--border-radius);
+    width: 95%;
+    height: 70px;
+    background-color: var(--card-bg);
+    margin: 8px;
+    transition: transform var(--transition-speed), background-color var(--transition-speed);
+    position: relative;
+}
+
+.chat-card:hover, .nav:hover {
+    background-color: var(--hover-color);
+    transform: translateY(-2px);
+    cursor: pointer;
+}
+
+/* CHANGE: Added active chat state */
+.chat-card.active {
+    background-color: var(--accent-color);
+    border-left: 4px solid #fff;
+}
+
+/* CHANGE: Added unread message indicator */
+.chat-card .unread {
+    position: absolute;
+    right: 10px;
+    top: 15px;
+    width: 18px;
+    height: 18px;
+    background-color: #e74c3c;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.chat-image {
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    margin: 10px;
+    background-color: var(--accent-color);
+    color: white;
+    font-size: 24px;
+    overflow: hidden;
+    transition: transform 0.2s;
+}
+
+/* CHANGE: Added profile image hover effect */
+.chat-image:hover {
+    transform: scale(1.1);
+}
+
+/* CHANGE: Added option to use real profile images */
+.chat-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.chat-card-right {
+    height: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.chat-card-right-top {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-right: 10px;
+    font-size: 16px;
+}
+
+/* CHANGE: Added name styling */
+.chat-name {
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+}
+
+/* CHANGE: Added time styling */
+.chat-time {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.chat-last-message {
+    padding-top: 3px;
+    padding-right: 10px;
+    font-size: 14px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 250px;
+}
+
+/* CHANGE: Improved responsive design for right content */
+.right-content , .mobile-nav{
+    display: none;
+}
+
+/* CHANGE: Added typing indicator */
+.typing-indicator {
+    display: flex;
+    align-items: center;
+    font-style: italic;
+    color: var(--accent-color);
+}
+
+.typing-indicator .dot {
+    width: 4px;
+    height: 4px;
+    margin: 0 1px;
+    background-color: var(--accent-color);
+    border-radius: 50%;
+    animation: typing 1.5s infinite ease-in-out;
+}
+
+.typing-indicator .dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-indicator .dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+.message-time-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 5px;
+}
+
+/* CHANGE: Added styles for the toggle navigation bar */
+.nav{
+    width: 100%;
+    cursor: pointer;
+    margin: 10px;
+    transition: transform var(--transition-speed), background-color var(--transition-speed);
+}
+
+.bi-list{
+    width: 100%;
+    position: relative;
+    left: 20px;
+    font-size:2rem;
+}
+
+.toggle-nav {
+    position: fixed;
+    top: 0;
+    left: -250px;
+    width: 250px;
+    height: 100%;
+    background-color: #2c3e50;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    transition: left 0.3s ease;
+    z-index: 1000;
+}
+.toggle-nav.active {
+    left: 0;
+}
+.toggle-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.toggle-nav ul li {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+}
+.toggle-nav ul li a {
+    text-decoration: none;
+    color: #fff;
+    display: flex;
+    align-items: center;
+}
+.toggle-nav ul li a i {
+    margin-right: 10px;
+}
+.toggle-nav .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+}
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: none;
+    z-index: 999;
+}
+.overlay.active {
+    display: block;
+}
+
+
+/* Style for add friend popup */
+.add-friend-popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+.addFriendBtn,li{
+    cursor: pointer;
+}
+.popup-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+.popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: black;
+}
+.popup-input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.popup-submit {
+    width: 100%;
+    padding: 10px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.popup-submit:hover {
+    background: #0056b3;
+}
+@keyframes typing {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+    100% { transform: translateY(0); }
+}
+
+/* CHANGE: Improved responsive breakpoints */
+@media(min-width: 768px) {
+    
+    .select-user-bar {
+        width: 350px;
+        min-width: 280px;
+        max-width: 30%;
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .right-content {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        background-color: var(--primary-bg);
+    }
+
+    /* CHANGE: Enhanced top and bottom bars */
+    .chat-top-bar, .chat-bottom-message-bar {
+        background-color: var(--secondary-bg);
+        box-sizing: border-box;
+        margin: 10px;
+        border-radius: var(--border-radius);
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        height: 70px;
+        width: calc(100% - 20px);
+    }
+
+    .chat-top-bar {
+        justify-content: space-between;
+        padding: 0 15px;
+    }
+
+    .chat-top-bar-left {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .chat-top-bar-left-name-and-last-seen {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin-left: 10px;
+    }
+
+    .chat-top-bar-left-name {
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .chat-top-bar-left-last-seen {
+        font-size: 12px;
+        color: var(--text-secondary);
+    }
+
+    /* CHANGE: Improved action buttons */
+    .chat-top-bar-right {
+        display: flex;
+        align-items: center;
+    }
+
+    .call, .video-call, .search, .more-options {
+        margin-left: 15px;
+        font-size: 18px;
+        padding: 8px;
+        border-radius: 50%;
+        background-color: var(--card-bg);
+        color: var(--text-color);
+        transition: background-color var(--transition-speed), transform var(--transition-speed);
+        cursor: pointer;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .call:hover, .video-call:hover, .search:hover, .more-options:hover ,.nav:hover{
+        background-color: var(--accent-color);
+        transform: scale(1.1);
+    }
+
+    /* CHANGE: Enhanced chat content area */
+    .chat-content {
+        height: calc(100% - 140px);
+        width: calc(100% - 20px);
+        border-radius: var(--border-radius);
+        margin: 0 10px;
+        padding: 15px;
+        box-sizing: border-box;
+        background-color: var(--card-bg);
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .chat-content::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .chat-content::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .chat-content::-webkit-scrollbar-thumb {
+        background: var(--accent-color);
+        border-radius: 10px;
+    }
+
+    /* CHANGE: Added empty state styling */
+    .empty-chat {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        color: var(--text-secondary);
+        text-align: center;
+        padding: 20px;
+    }
+
+    .empty-chat i {
+        font-size: 50px;
+        margin-bottom: 15px;
+        color: var(--accent-color);
+    }
+
+    /* CHANGE: Added message bubbles */
+    .message {
+        max-width: 80%;
+        padding: 10px 15px;
+        border-radius: 18px;
+        margin-bottom: 10px;
+        position: relative;
+        word-wrap: break-word;
+    }
+
+    .message.received {
+        align-self: flex-start;
+        background-color: var(--card-bg);
+        border-bottom-left-radius: 5px;
+    }
+
+    .message.sent {
+        align-self: flex-end;
+        background-color: var(--accent-color);
+        border-bottom-right-radius: 5px;
+    }
+
+    .message-time {
+        font-size: 10px;
+        color: var(--text-secondary);
+        position: absolute;
+        bottom: 5px;
+        right: 10px;
+    }
+
+    /* CHANGE: Enhanced bottom message bar */
+    .chat-bottom-message-bar {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 15px;
+    }
+
+    .text-message {
+        padding: 12px 15px;
+        flex: 1;
+        margin: 0 15px;
+        border-radius: var(--border-radius);
+        background-color: var(--input-bg);
+        border: none;
+        color: var(--text-color);
+        font-size: 15px;
+    }
+
+    .text-message:focus {
+        outline: none;
+        border: 1px solid var(--accent-color);
+    }
+
+    .emoji, .attach-file, .voice-message, .send-icon {
+        font-size: 20px;
+        padding: 10px;
+        border-radius: 50%;
+        background-color: var(--card-bg);
+        color: var(--text-color);
+        cursor: pointer;
+        transition: background-color var(--transition-speed), transform var(--transition-speed);
+        width: 40px;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0 5px;
+    }
+
+    .emoji:hover, .attach-file:hover, .voice-message:hover, .send-icon:hover {
+        background-color: var(--accent-color);
+        transform: scale(1.1);
+    }
+
+    .send-icon {
+        background-color: var(--accent-color);
+    }
+
+    /* CHANGE: Added larger breakpoint for even better scaling on big screens */
+    @media(min-width: 1200px) {
+        .select-user-bar {
+            width: 400px;
+        }
+
+        .chat-name {
+            max-width: 250px;
+        }
+
+        .chat-last-message {
+            max-width: 350px;
+        }
+    }
+}
+
+/* CHANGE: Added small screen optimization */
+@media(max-width: 767px) {
+    .mobile-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        background-color: var(--secondary-bg);
+        width: 100%;
+        position: fixed;
+        top: 0;
+        z-index: 100;
+        height: 60px;
+    }
+
+    .mobile-title {
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    .mobile-actions {
+        display: flex;
+    }
+
+    .mobile-action {
+        margin-left: 15px;
+        font-size: 18px;
+        cursor: pointer;
+    }
+
+    .select-user-bar {
+        padding-top: 70px;
+    }
+
+    /* CHANGE: Show chat content when active (for mobile toggle) */
+    .show-chat .select-user-bar {
+        display: none;
+    }
+
+    .show-chat .right-content {
+        display: flex;
+    }
+
+    /* CHANGE: Added back button for mobile */
+    .back-button {
+        display: none;
+        margin-right: 10px;
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+    .show-chat .back-button {
+        display: block;
+    }
+}
