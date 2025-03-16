@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CustomUser
+from .models import CustomUser , Message
 
 @admin.register(CustomUser)
 class CustomUserAdmin(admin.ModelAdmin):
@@ -18,5 +18,7 @@ class CustomUserAdmin(admin.ModelAdmin):
     )
     search_fields = ('username', 'email')
     ordering = ('username',)
+
+admin.site.register(Message)
 
 

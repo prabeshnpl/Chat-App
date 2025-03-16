@@ -1,20 +1,25 @@
-// Toggle between chat list and chat content on mobile
+// select the user to chat 
 document.querySelectorAll('.chat-card').forEach(card => {
     card.addEventListener('click', function() {
-        if (window.innerWidth < 768) {
-            document.body.classList.add('show-chat');
-        }
-        
+        const id = new URLSearchParams({
+            id: this.dataset.slug,
+        });
+        window.location.href = (`?${id.toString()}`);
+
         // Remove active class from all cards
         document.querySelectorAll('.chat-card').forEach(c => {
             c.classList.remove('active');
         });
-        
+
         // Add active class to clicked card
         this.classList.add('active');
+
+        if (window.innerWidth < 768) {
+            document.getElementById('right-content').style.display = 'flex';
+            document.getElementById('select-user-bar').style.display = 'none';
+        }
     });
 });
-
 // Back button functionality for mobile
 document.querySelector('.back-button').addEventListener('click', function() {
     document.body.classList.remove('show-chat');
@@ -30,17 +35,17 @@ window.addEventListener('resize', function() {
 // Toggle navigation bar
 document.querySelector('.nav').addEventListener('click', function() {
     document.getElementById('toggleNav').classList.add('active');
-    document.getElementById('overlay').classList.add('active');
+    document.getElementById('nav-overlay').classList.add('active');
 });
 
 document.getElementById('closeNav').addEventListener('click', function() {
     document.getElementById('toggleNav').classList.remove('active');
-    document.getElementById('overlay').classList.remove('active');
+    document.getElementById('nav-overlay').classList.remove('active');
 });
 
-document.getElementById('overlay').addEventListener('click', function() {
+document.getElementById('nav-overlay').addEventListener('click', function() {
     document.getElementById('toggleNav').classList.remove('active');
-    document.getElementById('overlay').classList.remove('active');
+    document.getElementById('nav-overlay').classList.remove('active');
 });
 
 // Show Add Friend Popup
@@ -55,19 +60,28 @@ document.getElementById('closeAddFriendPopup').addEventListener('click', functio
     document.getElementById('popupOverlay').style.display = 'none';
 });
 
+//Show Remove Friend Popup
+document.getElementById('removeFriendBtn').addEventListener('click',()=>{
+    document.getElementById('deleteFriendPopup').style.display = 'block';
+    document.getElementById('popupOverlay').style.display = 'block';
+})
+
+//Close Remove Friend Popup
+document.getElementById('closeDeleteFriendPopup').addEventListener('click',()=>{
+    document.getElementById('popupOverlay').style.display = 'none';
+    document.getElementById('deleteFriendPopup').style.display = 'none';
+})
+
+// Close both if clicked outside
 document.getElementById('popupOverlay').addEventListener('click', function() {
     document.getElementById('addFriendPopup').style.display = 'none';
     document.getElementById('popupOverlay').style.display = 'none';
+    document.getElementById('deleteFriendPopup').style.display = 'none';
 });
 
-// Handle Add-Friend Submission from frontend if necessary!!!
-// document.getElementById('addFriendSubmit').addEventListener('click', function() {
-//     const username = document.getElementById('friendUsername').value;
-//     if (username.trim()) {
-//         alert(`Friend request sent to ${username}`);
-//         document.getElementById('addFriendPopup').style.display = 'none';
-//         document.getElementById('popupOverlay').style.display = 'none';
-//     } else {
-//         alert('Please enter a username.');
-//     }
-// });
+// Handle back button for small devices
+
+document.getElementById('back-button').addEventListener('click',()=>{
+    window.location.href = '/';
+})
+

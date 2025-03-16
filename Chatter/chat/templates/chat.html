@@ -19,21 +19,9 @@
         {% endfor %}
     {% endif %}
 
-    <!-- Toggling Nav-bar -->
-    <div class="toggle-nav" id="toggleNav">
-        <div class="close-btn" id="closeNav"><i class="bi bi-x"></i></div>
-        <ul>
-            <li><div id="addFriendBtn"><i class="bi bi-person-plus"></i> Add Friend</div></li>
-            <li><a href="#"><i class="bi bi-gear"></i> Settings</a></li>
-            <li><a href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
-            <li><a href="#"><i class="bi bi-info-circle"></i> About</a></li>
-        </ul>
-    </div>
-    <div class="overlay" id="overlay"></div>
-
-    <!-- CHANGE: Added mobile navigation -->
+    <!-- Mobile navigation -->
     <div class="mobile-nav">
-        <div class="back-button"><i class="bi bi-arrow-left"></i></div>
+        <div class="back-button" id="back-button"><i class="bi bi-arrow-left"></i></div>
         <div class="mobile-title">Messages</div>
         <div class="mobile-actions">
             <div class="mobile-action"><i class="bi bi-search"></i></div>
@@ -41,149 +29,49 @@
         </div>
     </div>
 
+    <!--  -->
+
     <div class="container">
-        <div class="select-user-bar">
+        <div class="select-user-bar" id="select-user-bar">
             <div class="nav">
                 <i class="bi bi-list"></i>
             </div>
             
-            <!-- CHANGE: Added search box -->
+            <!-- Search box -->
             <div class="search-box">
                 <input type="text" class="search-input" placeholder="Search conversations...">
             </div>
 
-            <!-- CHANGE: Added variety to user cards -->
-            <!-- <div class="chat-card active">
-                <div class="unread">3</div>
-                <div class="chat-image flex">
-                    <i class="bi bi-person-fill"></i>
-                </div>
-                <div class="chat-card-right">
-                    <div class="chat-card-right-top">
-                        <div class="chat-name">Prabesh Nepal</div>
-                        <div class="chat-time">3:31 PM</div>
-                    </div>
-                    <div class="chat-last-message">
-                        <div class="typing-indicator">
-                            typing<span class="dot"></span><span class="dot"></span><span class="dot"></span>
-                        </div>
-                    </div>
-                </div>
-            </div> -->
             
-            <div class="chat-card">
+            <!-- Display all friend -->
+            {% for f in friends %}
+            <div class="chat-card {% if f == friend %}active{% endif %}" data-slug="{{ f.id }}">
                 <div class="chat-image flex"><i class="bi bi-person-fill"></i></div>
                 <div class="chat-card-right">
                     <div class="chat-card-right-top">
-                        <div class="chat-name">Alex Johnson</div>
+                        <div class="chat-name">{{ f.username }}</div>
                         <div class="chat-time">2:45 PM</div>
                     </div>
                     <div class="chat-last-message">Hey, are we still meeting today?</div>
+                    <div class="chat-card unread">2</div>
                 </div>
             </div>
-            {% for friend in friends %}
-            <div class="chat-card">
-                <div class="chat-image flex"><i class="bi bi-person-fill"></i></div>
-                <div class="chat-card-right">
-                    <div class="chat-card-right-top">
-                        <div class="chat-name">{{ friend.username }}</div>
-                        <div class="chat-time">2:45 PM</div>
-                    </div>
-                    <div class="chat-last-message">Hey, are we still meeting today?</div>
-                </div>
-            </div>
+            {% empty %}
+            <div>No friends. Try adding some.</div>
             {% endfor %}
+        </div>        
+        
+        <!-- Display message if friend is selected -->
+        {% if friend %}
+        <div class="right-content" id="right-content">
 
-            <!-- sample cards -->
-            
-            <!-- <div class="chat-card">
-                <div class="unread">1</div>
-                <div class="chat-image flex"><i class="bi bi-person-fill"></i></div>
-                <div class="chat-card-right">
-                    <div class="chat-card-right-top">
-                        <div class="chat-name">Sarah Miller</div>
-                        <div class="chat-time">Yesterday</div>
-                    </div>
-                    <div class="chat-last-message">I sent you the files you requested</div>
-                </div>
-            </div> -->
-            <!-- 
-            <div class="chat-card">
-                <div class="chat-image flex"><i class="bi bi-people-fill"></i></div>
-                <div class="chat-card-right">
-                    <div class="chat-card-right-top">
-                        <div class="chat-name">Project Team</div>
-                        <div class="chat-time">Monday</div>
-                    </div>
-                    <div class="chat-last-message">Meeting postponed to Thursday</div>
-                </div>
-            </div>
-            
-            <div class="chat-card">
-                <div class="chat-image flex"><i class="bi bi-person-fill"></i></div>
-                <div class="chat-card-right">
-                    <div class="chat-card-right-top">
-                        <div class="chat-name">Michael Chen</div>
-                        <div class="chat-time">03/05</div>
-                    </div>
-                    <div class="chat-last-message">Let me know when you're free to talk</div>
-                </div>
-            </div>
-            
-            <div class="chat-card">
-                <div class="chat-image flex"><i class="bi bi-person-fill"></i></div>
-                <div class="chat-card-right">
-                    <div class="chat-card-right-top">
-                        <div class="chat-name">Emma Watson</div>
-                        <div class="chat-time">02/28</div>
-                    </div>
-                    <div class="chat-last-message">Thanks for your help!</div>
-                </div>
-            </div>
-            
-            <div class="chat-card">
-                <div class="chat-image flex"><i class="bi bi-person-fill"></i></div>
-                <div class="chat-card-right">
-                    <div class="chat-card-right-top">
-                        <div class="chat-name">John Smith</div>
-                        <div class="chat-time">02/25</div>
-                    </div>
-                    <div class="chat-last-message">Let me check and get back to you</div>
-                </div>
-            </div>
-            
-            <div class="chat-card">
-                <div class="chat-image flex"><i class="bi bi-person-fill"></i></div>
-                <div class="chat-card-right">
-                    <div class="chat-card-right-top">
-                        <div class="chat-name">Technical Support</div>
-                        <div class="chat-time">02/20</div>
-                    </div>
-                    <div class="chat-last-message">Your ticket has been resolved</div>
-                </div>
-            </div> 
-            
-            <div class="chat-card">
-                <div class="chat-image flex"><i class="bi bi-person-fill"></i></div>
-                <div class="chat-card-right">
-                    <div class="chat-card-right-top">
-                        <div class="chat-name">Lisa Rodriguez</div>
-                        <div class="chat-time">02/15</div>
-                    </div>
-                    <div class="chat-last-message">See you at the conference!</div>
-                </div>
-            </div>
-            -->
-        </div>
-
-        <div class="right-content">
             <div class="chat-top-bar">
                 <div class="chat-top-bar-left">
                     <div class="chat-image flex">
                         <i class="bi bi-person-fill"></i>
                     </div>
                     <div class="chat-top-bar-left-name-and-last-seen">
-                        <div class="chat-top-bar-left-name">Prabesh Nepal</div>
+                        <div class="chat-top-bar-left-name">{{ friend.username }}</div>
                         <div class="chat-top-bar-left-last-seen">Online</div> 
                     </div>
                 </div>
@@ -191,65 +79,73 @@
                     <div class="video-call flex"><i class="bi bi-camera-video-fill"></i></div>
                     <div class="call flex"><i class="bi bi-telephone-fill"></i></div>
                     <div class="search flex"><i class="bi bi-search"></i></div>
-                    <!-- CHANGE: Added more options button -->
                     <div class="more-options flex"><i class="bi bi-three-dots-vertical"></i></div>
                 </div>
             </div>
+            <!-- Display warning message if the user isn't your friend. -->
+            {% if friend not in my_friend_only %}
+            <div style="padding-left: 10px;padding-right: 10px;">
+                
+                    Warning this user isn't in your friend list.Replying the message will automatically make the user your friend.
+            </div>
+            {% endif %}
             
-            <!-- CHANGE: Enhanced chat content with messages -->
             <div class="chat-content">
-                <!-- CHANGE: Added date separator -->
                 <div style="text-align: center; margin: 15px 0; color: var(--text-secondary); font-size: 12px;">
                     Today
                 </div>
                 
-                <div class="message received">
-                    Hi there! How are you doing today?
-                    <div class="message-time-wrapper">
-                        <span class="message-time">10:30 AM</span>
-                    </div>
-                </div>
+                {% if chats %}
+                    {% for chat in chats %}
+                        <div class="message {% if chat.sender == request.user %} sent {% else %} received {% endif %}">
+                            {{ chat.message }}
+                            <div class="message-time-wrapper">
+                                <span class="message-time">{{ chat.timestamp }}</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
                 
-                <div class="message sent">
-                    Hello! I'm doing great, thanks for asking. How about you?
-                    <div class="message-time-wrapper">
-                        <span class="message-time">10:32 AM</span>
-                    </div>
-                </div>
-                
-                <div class="message received">
-                    I'm good too! Just wanted to check in. Do you have time for a quick call later?
-                    <div class="message-time-wrapper">
-                        <span class="message-time">10:35 AM</span>
-                    </div>
-                </div>
-                
-                <div class="message sent">
-                    Sure, I'm free after 3 PM. Would that work for you?
-                    <div class="message-time-wrapper">
-                        <span class="message-time">10:36 AM</span>
-                    </div>
-                </div>
-                
-                <!-- CHANGE: Added empty state for when no messages exist -->
-                <div class="empty-chat" style="display: none;">
-                    <i class="bi bi-chat-text"></i>
-                    <h3>No messages yet</h3>
-                    <p>Start a conversation by sending a message below</p>
-                </div>
             </div>
             
-            <div class="chat-bottom-message-bar">
-                <!-- CHANGE: Added attachment button -->
+            <form class="chat-bottom-message-bar" method="post">
+                {% csrf_token %}
+                <!-- Attachment buttons -->
+                <input name="post_type" value="add_message" style="display: none;">
                 <div class="attach-file flex"><i class="bi bi-paperclip"></i></div>
                 <div class="emoji flex"><i class="bi bi-emoji-smile"></i></div>
-                <input class="text-message" placeholder="Type a message">
-                <div class="send-icon flex"><i class="bi bi-send-fill"></i></div>
+                <input class="text-message" placeholder="Type a message" name="message">
+                <button class="send-icon flex" type="submit"><i class="bi bi-send-fill"></i></button>
                 <div class="voice-message flex"><i class="bi bi-mic-fill"></i></div>
+            </form>
+        </div>
+        {% endif %}
+
+        <!-- Empty state for when no messages exist -->
+        <div class="blank-content-container" id="blank-content-container">
+            {% if not friend %}
+            <div class="blank-content">
+                <i class="bi bi-chat-text"></i>
+                <h3>No messages yet</h3><br>
+                <p>Start a conversation by sending a message</p>
             </div>
+            {% endif %}
         </div>
     </div>
 
+
+    <!-- Toggling Nav-bar -->
+    <div class="toggle-nav" id="toggleNav">
+        <div class="close-btn" id="closeNav"><i class="bi bi-x"></i></div>
+        <ul>
+            <li><div id="addFriendBtn"><i class="bi bi-person-plus"></i> Add Friend</div></li>
+            <li><div id="removeFriendBtn"><i class="bi bi-person-dash"></i> Remove Friend</div></li>
+            <li><a href="#"><i class="bi bi-gear"></i> Settings</a></li>
+            <li><a href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+            <li><a href="#"><i class="bi bi-info-circle"></i> About</a></li>
+        </ul>
+    </div>
+    <div class="overlay" id="nav-overlay"></div>
 
     <!-- Add Friend Popup -->
     <div class="add-friend-popup" id="addFriendPopup">
@@ -261,16 +157,76 @@
             <div class="popup-body">
                 <form method="POST">
                     {% csrf_token %}
-                    <input style="display: none;" value="add_friend" name="add_friend">
+                    <input style="display: none;" value="add_friend" name="post_type">
                     <input type="text" id="friendUsername" placeholder="Enter username" class="popup-input" name="username">
                     <button id="addFriendSubmit" class="popup-submit" type="submit">Add</button>
                 </form>
             </div>
         </div>
     </div>
-    <div class="popup-overlay" id="popupOverlay"></div>    
+
+    <!-- Delete Friend -->
+    <div class="delete-friend-popup" id="deleteFriendPopup">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h3>Delete Friend</h3>
+                <div class="close-popup" id="closeDeleteFriendPopup"><i class="bi bi-x"></i></div>
+            </div>
+            <div class="popup-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    <input style="display: none;" value="delete_friend" name="post_type">
+                    <input type="text" id="friendUsername" placeholder="Enter username" class="popup-input" name="username">
+                    <button id="addFriendSubmit" class="popup-submit" type="submit">Remove</button>
+                </form>
+            </div>
+        </div>
+    </div>
     
+    <div class="popup-overlay" id="popupOverlay"></div>  
+
     <script src="{% static 'js/chat.js' %}"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const blankContentContainer = document.getElementById('blank-content-container');
+            const rightContent = document.getElementById('right-content');
+            const selectUserBar = document.getElementById('select-user-bar');
+
+            function adjustLayout() {
+                if (window.innerWidth > 768) {
+                    {% if friend %}
+                        blankContentContainer.style.display = 'none';
+                    {% else %}
+                        blankContentContainer.style.display = 'block';
+                    {% endif %}
+                    rightContent.style.display = 'flex';
+                    selectUserBar.style.display = 'flex';
+                } else {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    if (urlParams.has('id')) {
+                        rightContent.style.display = 'flex';
+                        selectUserBar.style.display = 'none';
+                    } else {
+                        rightContent.style.display = 'none';
+                        selectUserBar.style.display = 'flex';
+                    }
+                }
+            }
+
+            // Initial layout adjustment
+            adjustLayout();
+
+            // Adjust layout on window resize
+            window.addEventListener('resize', adjustLayout);
+
+            // Scroll to the bottom of the chat-content to show the latest message
+            const chatContent = document.querySelector('.chat-content');
+            if (chatContent) {
+                chatContent.scrollTop = chatContent.scrollHeight;
+            }
+        });
+    </script>
 
 </body>
 </html>
