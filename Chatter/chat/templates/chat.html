@@ -14,10 +14,15 @@
 <body>
     <!-- Any messages -->
     {% if messages %}
+    <div class="messages">
         {% for message in messages %}
-            <div class="message-box">{{ message }}</div>
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                {{ message }}
+            </div>
         {% endfor %}
+    </div>
     {% endif %}
+
 
     <!-- Mobile navigation -->
     <div class="mobile-nav">
@@ -29,12 +34,12 @@
         </div>
     </div>
 
-    <!--  -->
 
-    <div class="container">
+    <div class="container" id="roomCode" data-room-code="{{ room_code|default:'' }}">
         <div class="select-user-bar" id="select-user-bar">
             <div class="nav">
                 <i class="bi bi-list"></i>
+                <div>{{ request.user }}</div>
             </div>
             
             <!-- Search box -->
@@ -86,11 +91,11 @@
             {% if friend not in my_friend_only %}
             <div style="padding-left: 10px;padding-right: 10px;">
                 
-                    Warning this user isn't in your friend list.Replying the message will automatically make the user your friend.
+                    Warning this user isn't in your friend list.Please add this user to continue messaging.
             </div>
             {% endif %}
             
-            <div class="chat-content">
+            <div class="chat-content" id="chatContent">
                 <div style="text-align: center; margin: 15px 0; color: var(--text-secondary); font-size: 12px;">
                     Today
                 </div>
@@ -108,13 +113,15 @@
                 
             </div>
             
-            <form class="chat-bottom-message-bar" method="post">
+            <form class="chat-bottom-message-bar" method="post" id="chatForm">
                 {% csrf_token %}
                 <!-- Attachment buttons -->
-                <input name="post_type" value="add_message" style="display: none;">
+                <!-- <input name="post_type" value="add_message" style="display: none;"> -->
                 <div class="attach-file flex"><i class="bi bi-paperclip"></i></div>
                 <div class="emoji flex"><i class="bi bi-emoji-smile"></i></div>
-                <input class="text-message" placeholder="Type a message" name="message">
+
+                <input class="text-message" placeholder="Type a message" name="message" required>
+
                 <button class="send-icon flex" type="submit"><i class="bi bi-send-fill"></i></button>
                 <div class="voice-message flex"><i class="bi bi-mic-fill"></i></div>
             </form>
@@ -192,39 +199,102 @@
             const blankContentContainer = document.getElementById('blank-content-container');
             const rightContent = document.getElementById('right-content');
             const selectUserBar = document.getElementById('select-user-bar');
+            const chatForm = document.getElementById('chatForm'); // Get the chat form
 
-            function adjustLayout() {
+            // Scroll to the bottom of the chat-content to show the latest message. Also addes timeout to make sure
+            const chatContent = document.querySelector('.chat-content');
+            if (chatContent) {
+                setTimeout(() => {
+                    chatContent.scrollTop = chatContent.scrollHeight;
+                }, 0);
+            }
+            
+
+            function adjustLayout(){
                 if (window.innerWidth > 768) {
-                    {% if friend %}
-                        blankContentContainer.style.display = 'none';
-                    {% else %}
-                        blankContentContainer.style.display = 'block';
-                    {% endif %}
-                    rightContent.style.display = 'flex';
-                    selectUserBar.style.display = 'flex';
+                    if (blankContentContainer) {
+                        {% if friend %}
+                            blankContentContainer.style.display = 'none';
+                        {% else %}
+                            blankContentContainer.style.display = 'block';
+                        {% endif %}
+                    }
+                    if (rightContent) {
+                        rightContent.style.display = 'flex';
+                    }
+                    if (selectUserBar) {
+                        selectUserBar.style.display = 'flex';
+                    }
                 } else {
                     const urlParams = new URLSearchParams(window.location.search);
                     if (urlParams.has('id')) {
-                        rightContent.style.display = 'flex';
-                        selectUserBar.style.display = 'none';
+                        if (rightContent) {
+                            rightContent.style.display = 'flex';
+                        }
+                        if (selectUserBar) {
+                            selectUserBar.style.display = 'none';
+                        }
                     } else {
-                        rightContent.style.display = 'none';
-                        selectUserBar.style.display = 'flex';
+                        if (rightContent) {
+                            rightContent.style.display = 'none';
+                        }
+                        if (selectUserBar) {
+                            selectUserBar.style.display = 'flex';
+                        }
                     }
                 }
             }
-
             // Initial layout adjustment
-            adjustLayout();
-
+            adjustLayout();            
             // Adjust layout on window resize
             window.addEventListener('resize', adjustLayout);
 
-            // Scroll to the bottom of the chat-content to show the latest message
-            const chatContent = document.querySelector('.chat-content');
-            if (chatContent) {
-                chatContent.scrollTop = chatContent.scrollHeight;
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+
+            if(id){
+                const roomIdElement = document.getElementById('roomCode');
+                const room_code = roomIdElement ? roomIdElement.dataset.roomCode : null;
+                const receiverIdElement = document.getElementsByClassName('active')[0];
+                const receiverId = receiverIdElement ? receiverIdElement.dataset.slug : null;
+                if (room_code) {
+                    console.log(room_code)
+                    let socket = new WebSocket(`ws://${window.location.host}/ws/chat/${room_code}/`);
+
+                    socket.onmessage = (e)=>{
+                        data = JSON.parse(e.data);
+                        console.log(`Message received:`,data);
+                        if(data.type=='chat'){
+                            let divClass = 'received';
+                            if(data.sender == "{{ request.user.username }}"){
+                                divClass ='sent';
+                            }
+                            
+                            const chatContent = document.getElementById('chatContent');
+                            chatContent.insertAdjacentHTML(
+                            'beforeend',
+                            `<div class="message ${divClass}">
+                            ${data.message}
+                            <div class="message-time-wrapper">
+                                <span class="message-time">now</span>
+                            </div>
+                            </div>`
+                            );
+                            // To auto scroll when new div is added!!
+                            chatContent.scrollTop = chatContent.scrollHeight;
+                        }
+
+                    }
+
+                    chatForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const message = e.target.message.value;
+                    socket.send(JSON.stringify({message:message,receiverId:receiverId}));     
+                    e.target.reset();               
+                    });
+                }
             }
+
         });
     </script>
 

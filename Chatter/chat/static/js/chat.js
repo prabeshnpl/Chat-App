@@ -20,17 +20,6 @@ document.querySelectorAll('.chat-card').forEach(card => {
         }
     });
 });
-// Back button functionality for mobile
-document.querySelector('.back-button').addEventListener('click', function() {
-    document.body.classList.remove('show-chat');
-});
-
-// Handle window resize
-window.addEventListener('resize', function() {
-    if (window.innerWidth >= 768) {
-        document.body.classList.remove('show-chat');
-    }
-});
 
 // Toggle navigation bar
 document.querySelector('.nav').addEventListener('click', function() {
@@ -72,6 +61,7 @@ document.getElementById('closeDeleteFriendPopup').addEventListener('click',()=>{
     document.getElementById('deleteFriendPopup').style.display = 'none';
 })
 
+
 // Close both if clicked outside
 document.getElementById('popupOverlay').addEventListener('click', function() {
     document.getElementById('addFriendPopup').style.display = 'none';
@@ -84,4 +74,6 @@ document.getElementById('popupOverlay').addEventListener('click', function() {
 document.getElementById('back-button').addEventListener('click',()=>{
     window.location.href = '/';
 })
+
+
 
