@@ -1,2 +1,4 @@
 # Messenger-app
-A web app that allows you to chat with other users.
+Asynchronous chatting webapp using Django channels and websockets .
+Has user authentication.
+Uses redis as a message broker.
