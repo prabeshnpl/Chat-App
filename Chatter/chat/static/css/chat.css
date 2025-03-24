@@ -259,6 +259,7 @@ body {
 }
 .blank-content-container{
     flex: auto;
+    display: none;
 }
 .blank-content{
     display: flex;

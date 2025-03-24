@@ -138,6 +138,7 @@
             </div>
             {% endif %}
         </div>
+
     </div>
 
 
@@ -195,107 +196,52 @@
     <script src="{% static 'js/chat.js' %}"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const blankContentContainer = document.getElementById('blank-content-container');
-            const rightContent = document.getElementById('right-content');
-            const selectUserBar = document.getElementById('select-user-bar');
-            const chatForm = document.getElementById('chatForm'); // Get the chat form
+        const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get('id');
 
-            // Scroll to the bottom of the chat-content to show the latest message. Also addes timeout to make sure
-            const chatContent = document.querySelector('.chat-content');
-            if (chatContent) {
-                setTimeout(() => {
+    if(id){
+        
+
+        const roomIdElement = document.getElementById('roomCode');
+        const room_code = roomIdElement ? roomIdElement.dataset.roomCode : null;
+        
+        if (room_code) {
+            console.log(room_code)
+            let socket = new WebSocket(`ws://${window.location.host}/ws/chat/${room_code}/`);
+
+            socket.onmessage = (e)=>{
+                data = JSON.parse(e.data);
+                console.log(`Message received:`,data);
+                if(data.type=='chat'){
+                    let divClass = 'received';
+                    if(data.sender == "{{ request.user.username }}"){
+                        divClass ='sent';
+                    }
+                    
+                    const chatContent = document.getElementById('chatContent');
+                    chatContent.insertAdjacentHTML(
+                    'beforeend',
+                    `<div class="message ${divClass}">
+                    ${data.message}
+                    <div class="message-time-wrapper">
+                        <span class="message-time">now</span>
+                    </div>
+                    </div>`
+                    );
+                    // To auto scroll when new div is added!!
                     chatContent.scrollTop = chatContent.scrollHeight;
-                }, 0);
-            }
-            
-
-            function adjustLayout(){
-                if (window.innerWidth > 768) {
-                    if (blankContentContainer) {
-                        {% if friend %}
-                            blankContentContainer.style.display = 'none';
-                        {% else %}
-                            blankContentContainer.style.display = 'block';
-                        {% endif %}
-                    }
-                    if (rightContent) {
-                        rightContent.style.display = 'flex';
-                    }
-                    if (selectUserBar) {
-                        selectUserBar.style.display = 'flex';
-                    }
-                } else {
-                    const urlParams = new URLSearchParams(window.location.search);
-                    if (urlParams.has('id')) {
-                        if (rightContent) {
-                            rightContent.style.display = 'flex';
-                        }
-                        if (selectUserBar) {
-                            selectUserBar.style.display = 'none';
-                        }
-                    } else {
-                        if (rightContent) {
-                            rightContent.style.display = 'none';
-                        }
-                        if (selectUserBar) {
-                            selectUserBar.style.display = 'flex';
-                        }
-                    }
                 }
-            }
-            // Initial layout adjustment
-            adjustLayout();            
-            // Adjust layout on window resize
-            window.addEventListener('resize', adjustLayout);
 
-            const urlParams = new URLSearchParams(window.location.search);
-            const id = urlParams.get('id');
-
-            if(id){
-                const roomIdElement = document.getElementById('roomCode');
-                const room_code = roomIdElement ? roomIdElement.dataset.roomCode : null;
-                const receiverIdElement = document.getElementsByClassName('active')[0];
-                const receiverId = receiverIdElement ? receiverIdElement.dataset.slug : null;
-                if (room_code) {
-                    console.log(room_code)
-                    let socket = new WebSocket(`ws://${window.location.host}/ws/chat/${room_code}/`);
-
-                    socket.onmessage = (e)=>{
-                        data = JSON.parse(e.data);
-                        console.log(`Message received:`,data);
-                        if(data.type=='chat'){
-                            let divClass = 'received';
-                            if(data.sender == "{{ request.user.username }}"){
-                                divClass ='sent';
-                            }
-                            
-                            const chatContent = document.getElementById('chatContent');
-                            chatContent.insertAdjacentHTML(
-                            'beforeend',
-                            `<div class="message ${divClass}">
-                            ${data.message}
-                            <div class="message-time-wrapper">
-                                <span class="message-time">now</span>
-                            </div>
-                            </div>`
-                            );
-                            // To auto scroll when new div is added!!
-                            chatContent.scrollTop = chatContent.scrollHeight;
-                        }
-
-                    }
-
-                    chatForm.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    const message = e.target.message.value;
-                    socket.send(JSON.stringify({message:message,receiverId:receiverId}));     
-                    e.target.reset();               
-                    });
-                }
             }
 
-        });
+            chatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const message = e.target.message.value;
+            socket.send(JSON.stringify({message:message,receiverId:receiverId}));     
+            e.target.reset();               
+            });
+        }
+    }
     </script>
 
 </body>
