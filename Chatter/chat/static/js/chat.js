@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const blankContentContainer = document.getElementById('blank-content-container');
     const rightContent = document.getElementById('right-content');
     const selectUserBar = document.getElementById('select-user-bar');
-    const chatForm = document.getElementById('chatForm'); // Get the chat form
     const receiverIdElement = document.getElementsByClassName('active')[0];
     const receiverId = receiverIdElement ? receiverIdElement.dataset.slug : null;
 
@@ -118,12 +117,39 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('deleteFriendPopup').style.display = 'none';
     })
 
+    //Show Add Group Popup
+    document.getElementById('addGroupBtn').addEventListener('click', function() {
+        document.getElementById('addGroupPopup').style.display = 'block';
+        document.getElementById('popupOverlay').style.display = 'block';
+    });
+
+    // Close Add Group Popup
+    document.getElementById('closeAddGroupPopup').addEventListener('click', function() {
+        document.getElementById('addGroupPopup').style.display = 'none';
+        document.getElementById('popupOverlay').style.display = 'none';
+    });
+
+    //Show Remove Group Popup
+    document.getElementById('removeGroupBtn').addEventListener('click', function() {
+        document.getElementById('deleteGroupPopup').style.display = 'block';
+        document.getElementById('popupOverlay').style.display = 'block';
+    });
+
+    // Close Remove Group Popup
+    document.getElementById('closeDeleteGroupPopup').addEventListener('click', function() {
+        document.getElementById('deleteGroupPopup').style.display = 'none';
+        document.getElementById('popupOverlay').style.display = 'none';
+    });
+
+
 
     // Close both if clicked outside
     document.getElementById('popupOverlay').addEventListener('click', function() {
         document.getElementById('addFriendPopup').style.display = 'none';
         document.getElementById('popupOverlay').style.display = 'none';
         document.getElementById('deleteFriendPopup').style.display = 'none';
+        document.getElementById('addGroupPopup').style.display = 'none';
+        document.getElementById('deleteGroupPopup').style.display = 'none';
     });
 
     // Handle back button for small devices

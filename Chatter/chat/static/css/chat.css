@@ -367,7 +367,7 @@ body {
 
 
 /* Style for add and remove friend popup */
-.add-friend-popup, .delete-friend-popup{
+.add-friend-popup, .delete-friend-popup, .add-group-popup, .delete-group-popup{
     display: none;
     position: fixed;
     top: 50%;

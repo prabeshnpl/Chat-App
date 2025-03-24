@@ -57,7 +57,6 @@ class Chat(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def get_friendship(self,receiverId):
-
         return CustomUser.objects.get(id=receiverId)
 
     @database_sync_to_async
