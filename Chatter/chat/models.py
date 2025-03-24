@@ -25,6 +25,29 @@ class FriendShip(models.Model):
     class Meta:
         unique_together = ('user', 'friend')
 
+class Group(models.Model):
+    name = models.CharField(max_length=64)
+    members = models.ManyToManyField(CustomUser,related_name='all_groups')
+    group_code = models.CharField(max_length=128)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.name}"
+
+    
+class GroupMessage(models.Model):
+    group = models.ForeignKey(Group,on_delete=models.CASCADE)
+    sender = models.ForeignKey(CustomUser, related_name='group_messages', on_delete=models.SET_NULL, null=True)
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.sender} sends {self.message}"
+
+    class Meta:
+        ordering = ['timestamp']
+
+
 class Message(models.Model):
     sender = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='sent_message')
     receiver = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='received_message')

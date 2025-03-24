@@ -96,6 +96,10 @@ def chat(request):
                     messages.error(request,'User doesn\'t exist')
                 else:messages.error(request,str(e))
 
+        elif type == 'add_group':
+            groupname = request.POST.groupname
+            
+
         return redirect('chat')
 
     return render(request,'chat.html',{
