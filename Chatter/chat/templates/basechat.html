@@ -1,0 +1,172 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message</title>
+    <!-- CHANGE: Updated to use the latest Bootstrap icons and added Font Awesome for more icon options -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/chat.css' %}">
+</head>
+<body>
+    <!-- Any messages -->
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+
+    <!-- Mobile navigation -->
+    <div class="mobile-nav">
+        <div class="back-button" id="back-button"><i class="bi bi-arrow-left"></i></div>
+        <div class="mobile-title">Messages</div>
+        <div class="mobile-actions">
+            <div class="mobile-action"><i class="bi bi-search"></i></div>
+            <div class="mobile-action"><i class="bi bi-three-dots-vertical"></i></div>
+        </div>
+    </div>
+
+
+    <div class="container" id="roomCode" data-room-code="{{ room_code|default:'' }}">
+        <div class="select-user-bar" id="select-user-bar">
+            <div class="nav">
+                <i class="bi bi-list"></i>
+                <div>{{ request.user }}</div>
+            </div>
+            
+            <!-- Search box -->
+            <div class="search-box">
+                <input type="text" class="search-input" placeholder="Search conversations...">
+            </div>
+
+            
+            <!-- Display friend or group -->
+            {% block friendorgroup %}
+            
+            {% endblock %}
+        </div>        
+        
+        <!-- Chat content -->
+        {% block chatblock %}
+        {% endblock %}        
+
+        <!-- Empty state for when no messages exist -->
+        <div class="blank-content-container" id="blank-content-container">
+            {% if not friend %}
+            <div class="blank-content">
+                <i class="bi bi-chat-text"></i>
+                <h3>No messages yet</h3><br>
+                <p>Start a conversation by sending a message</p>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+
+
+    <!-- Toggling Nav-bar -->
+    <div class="toggle-nav" id="toggleNav">
+        <div class="close-btn" id="closeNav"><i class="bi bi-x"></i></div>
+        <ul>
+            <li id="navfriend"><div id="FriendBtn"><i class="bi bi-person-fill"><a href="{% url 'chat' %}">My Friends</a></i></div></li>
+            <li id="navgroup"><div id="GroupBtn"><i class="bi bi-people-fill"><a href="{% url 'group_chat' %}">My Group</a></i></div></li>
+            <li><div id="addFriendBtn"><i class="bi bi-person-plus"></i> Add Friend</div></li>
+            <li><div id="removeFriendBtn"><i class="bi bi-person-dash"></i> Remove Friend</div></li>
+            <li><div id="addGroupBtn"><i class="bi bi-people-fill"></i> Create Group</div></li>
+            <li><div id="removeGroupBtn"><i class="bi bi-person-fill-add"></i> Join Group</div></li>
+            <li><a href="#"><i class="bi bi-gear"></i> Settings</a></li>
+            <li><a href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+            <li><a href="#"><i class="bi bi-info-circle"></i> About</a></li>
+        </ul>
+    </div>
+    <div class="overlay" id="nav-overlay"></div>
+
+    <!-- Add Friend Popup -->
+    <div class="add-friend-popup" id="addFriendPopup">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h3>Add Friend</h3>
+                <div class="close-popup" id="closeAddFriendPopup"><i class="bi bi-x"></i></div>
+            </div>
+            <div class="popup-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    <input style="display: none;" value="add_friend" name="post_type">
+                    <input type="text" id="addfriendUsername" placeholder="Enter username" class="popup-input" name="username" required>
+                    <button id="addFriendSubmit" class="popup-submit" type="submit">Add</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Group Popup -->
+    <div class="add-group-popup" id="addGroupPopup">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h3>Create Group</h3>
+                <div class="close-popup" id="closeAddGroupPopup"><i class="bi bi-x"></i></div>
+            </div>
+            <div class="popup-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    <input style="display: none;" value="create_group" name="post_type">
+                    <input type="text" id="groupName" placeholder="Enter GroupName(Must be unique)" class="popup-input" name="groupname" required>
+                    <p style="color: red;font-size: small;">Note: Share your groupname with others to let them join.</p><br>
+                    <button id="addGroupSubmit" class="popup-submit" type="submit">Create</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Friend -->
+    <div class="delete-friend-popup" id="deleteFriendPopup">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h3>Delete Friend</h3>
+                <div class="close-popup" id="closeDeleteFriendPopup"><i class="bi bi-x"></i></div>
+            </div>
+            <div class="popup-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    <input style="display: none;" value="delete_friend" name="post_type">
+                    <input type="text" id="deletefriendUsername" placeholder="Enter username" class="popup-input" name="username" required>
+                    <button id="deleteFriendSubmit" class="popup-submit" type="submit">Remove</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Group -->
+    <div class="delete-group-popup" id="deleteGroupPopup">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h3>Leave group</h3>
+                <div class="close-popup" id="closeDeleteGroupPopup"><i class="bi bi-x"></i></div>
+            </div>
+            <div class="popup-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    <input style="display: none;" value="delete_group" name="post_type">
+                    <input type="text" id="deleteGroupUsername" placeholder="Enter groupname" class="popup-input" name="groupname" required>
+                    <button id="deleteGroupSubmit" class="popup-submit" type="submit">Leave</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="popup-overlay" id="popupOverlay"></div>  
+
+    <script src="{% static 'js/chat.js' %}"></script>
+
+
+
+</body>
+</html>

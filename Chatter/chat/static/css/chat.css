@@ -323,9 +323,14 @@ body {
     box-shadow: 2px 0 5px rgba(0,0,0,0.1);
     transition: left 0.3s ease;
     z-index: 1000;
+    overflow-y: auto;
 }
 .toggle-nav.active {
     left: 0;
+}
+#navfriend.active,#navgroup.active{
+    background-color: var(--accent-color);
+    border-left: 4px solid #fff;
 }
 .toggle-nav ul {
     list-style: none;

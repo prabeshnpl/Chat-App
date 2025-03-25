@@ -1,15 +1,14 @@
 {% extends 'basechat.html' %}
-{% load static %}
 
+<!-- Display friend or group -->
 {% block friendorgroup %}
-
-    <!-- Display all friend -->
-    {% for f in friends %}
-    <div class="chat-card {% if f == friend %}active{% endif %}" data-slug="{{ f.id }}">
+    <!-- Display all groups -->
+    {% for groups in my_groups %}
+    <div class="chat-card {% if groups == group %}active{% endif %}" data-slug="{{ groups.id }}">
         <div class="chat-image flex"><i class="bi bi-person-fill"></i></div>
         <div class="chat-card-right">
             <div class="chat-card-right-top">
-                <div class="chat-name">{{ f.username }}</div>
+                <div class="chat-name">{{ groups.name }}</div>
                 <div class="chat-time">2:45 PM</div>
             </div>
             <div class="chat-last-message">Hey, are we still meeting today?</div>
@@ -17,14 +16,14 @@
         </div>
     </div>
     {% empty %}
-    <div>No friends. Try adding some.</div>
+    <div>No Groups. Try adding some.</div>
     {% endfor %}
-
 {% endblock %}
 
+
+
 {% block chatblock %}
-<!-- Display message if friend is selected -->
-{% if friend %}
+{% if room_code %}
 <div class="right-content" id="right-content">
 
     <div class="chat-top-bar">
@@ -33,7 +32,7 @@
                 <i class="bi bi-person-fill"></i>
             </div>
             <div class="chat-top-bar-left-name-and-last-seen">
-                <div class="chat-top-bar-left-name">{{ friend.username }}</div>
+                <div class="chat-top-bar-left-name">{{ group.name }}</div>
                 <div class="chat-top-bar-left-last-seen">Online</div> 
             </div>
         </div>
@@ -44,13 +43,6 @@
             <div class="more-options flex"><i class="bi bi-three-dots-vertical"></i></div>
         </div>
     </div>
-    <!-- Display warning message if the user isn't your friend. -->
-    {% if friend not in my_friend_only %}
-    <div style="padding-left: 10px;padding-right: 10px;">
-        
-            Warning this user isn't in your friend list.Please add this user to continue messaging.
-    </div>
-    {% endif %}
     
     <div class="chat-content" id="chatContent">
         <div style="text-align: center; margin: 15px 0; color: var(--text-secondary); font-size: 12px;">
@@ -82,54 +74,52 @@
         <div class="voice-message flex"><i class="bi bi-mic-fill"></i></div>
     </form>
 </div>
-{% endif %}
-
 
 <script>
     const urlParams = new URLSearchParams(window.location.search);
     const id = urlParams.get('id');
-
     if(id){
-    const roomIdElement = document.getElementById('roomCode');
-    const room_code = roomIdElement ? roomIdElement.dataset.roomCode : null;
-    
-    if (room_code) {
-        console.log(room_code)
-        let socket = new WebSocket(`ws://${window.location.host}/ws/chat/${room_code}/`);
+        const roomIdElement = document.getElementById('roomCode');
+        const room_code = roomIdElement ? roomIdElement.dataset.roomCode : null; 
+        if(room_code){
+            console.log(room_code);
 
-        socket.onmessage = (e)=>{
-            data = JSON.parse(e.data);
-            console.log(`Message received:`,data);
-            if(data.type=='chat'){
-                let divClass = 'received';
-                if(data.sender == "{{ request.user.username }}"){
-                    divClass ='sent';
+            let socket = new WebSocket(`ws://${window.location.host}/ws/chat/${room_code}/`);
+
+            socket.onmessage = (e)=>{
+                data = JSON.parse(e.data);
+                console.log(`Message received:`,data);
+                if(data.type=='groupchat'){
+                    let divClass = 'received';
+                    if(data.sender == "{{ request.user.username }}"){
+                        divClass ='sent';
+                    }
+                    
+                    const chatContent = document.getElementById('chatContent');
+                    chatContent.insertAdjacentHTML(
+                    'beforeend',
+                    `<div class="message ${divClass}">
+                    ${data.message}
+                    <div class="message-time-wrapper">
+                        <span class="message-time">now</span>
+                    </div>
+                    </div>`
+                    );
+                    // To auto scroll when new div is added!!
+                    chatContent.scrollTop = chatContent.scrollHeight;
                 }
-                
-                const chatContent = document.getElementById('chatContent');
-                chatContent.insertAdjacentHTML(
-                'beforeend',
-                `<div class="message ${divClass}">
-                ${data.message}
-                <div class="message-time-wrapper">
-                    <span class="message-time">now</span>
-                </div>
-                </div>`
-                );
-                // To auto scroll when new div is added!!
-                chatContent.scrollTop = chatContent.scrollHeight;
             }
-        }
 
-        chatForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const message = e.target.message.value;
-        socket.send(JSON.stringify({message:message,receiverId:id}));     
-        e.target.reset();               
-        });
+            document.getElementById('chatForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const message = e.target.message.value;
+            socket.send(JSON.stringify({message:message,receiverId:id}));     
+            e.target.reset();               
+            });
+            }
     }
-}
+    
+
 </script>
-
-
-{% endblock %} 
+{% endif %}
+{% endblock %}

@@ -1,11 +1,12 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
-from .models import CustomUser, Message, FriendShip
+from .models import CustomUser, Message, FriendShip, GroupMessage, Group
 from channels.db import database_sync_to_async
-import uuid
+
 class Chat(AsyncWebsocketConsumer):
     async def connect(self):
         # Create a room using room_code saved in the database for every pair of users
+        # This code is fetched through url from routing.py
         self.room_code = self.scope['url_route']['kwargs']['room_code']
         self.room_name = f'room_{self.room_code}'
 
@@ -63,4 +64,54 @@ class Chat(AsyncWebsocketConsumer):
     def save_message(self, sender, receiver, message):
         # Save the message to the database
         return Message.objects.create(sender=sender, receiver=receiver, message=message)
+
+class GroupChat(AsyncWebsocketConsumer):
+    async def connect(self):
+        self.room_code = self.scope['url_route']['kwargs']['room_code']
+        self.room_name = f'room_{self.room_code}'
+
+        await self.channel_layer.group_add(self.room_name, self.channel_name)
+        self.accept()
+        await self.send(json.dumps({"type":'connection','message':'connected'}))
+
+    async def disconnect(self, code):
+        self.channel_layer.group_discard(self.room_name,self.channel_name)
+        await self.send(json.dumps({'type': 'connection', 'message': 'Successfully disconnected'}))
+
+    async def receive(self, text_data=None, bytes_data=None):
+        data = json.loads(text_data)
+        sender = self.scope['user']
+        message = data['message']
+        groupId = data['receiverId']
+
+        if sender.is_authenticated:
+            try:
+                # Save the message
+                await self.save_message(groupId, sender, message)
+
+                # Broadcast the message to the room group
+                await self.channel_layer.group_send(
+                    self.room_name,
+                    {
+                        'type': 'send_chat',
+                        'message': message,
+                        'sender': sender.username,
+                    }
+                )
+            except FriendShip.DoesNotExist:
+                await self.send(json.dumps({'error': 'Invalid room code'}))
+        else:
+            await self.send(json.dumps({'error': 'User not authenticated'}))
+
+    async def send_chat(self, event):
+        # Send the message to WebSocket clients
+        message = event['message']
+        sender = event['sender']
+        await self.send(json.dumps({'type':'chat','message': message, 'sender': sender}))
+
+    @database_sync_to_async
+    def save_message(self, groupId, sender, message):
+        # Save the message to the database
+        print('save')
+        return GroupMessage.objects.create(sender=sender, group=Group.objects.get(id=groupId), message=message)
 

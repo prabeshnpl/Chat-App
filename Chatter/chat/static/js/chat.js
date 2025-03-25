@@ -76,6 +76,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+    // Get the current URL and path
+    const currentPath = window.location.pathname;
+    if(currentPath == '/'){
+        document.getElementById('navfriend').classList.add('active');
+    }
+    else if(currentPath == '/group/'){
+        document.getElementById('navgroup').classList.add('active');
+    }
 
     // Toggle navigation bar
     document.querySelector('.nav').addEventListener('click', function() {

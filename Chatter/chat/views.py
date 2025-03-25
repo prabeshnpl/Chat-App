@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login ,logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q,F
-from .models import CustomUser, Message, FriendShip
+from .models import CustomUser, Message, FriendShip, Group, GroupMessage
 import uuid
 # Create your views here.
 @login_required()
@@ -98,7 +98,9 @@ def chat(request):
 
         elif type == 'add_group':
             groupname = request.POST.groupname
-            
+            group = Group.objects.get(name=groupname)
+            group.members = request.user
+            group.save()
 
         return redirect('chat')
 
@@ -109,6 +111,42 @@ def chat(request):
         'friend':friend,
         'room_code':room_code,
         })
+
+@login_required
+def group_chat(request):
+    my_groups = request.user.all_groups.all()
+    group_id = request.GET.get('id')
+    chats = group_code = group = None
+
+    if group_id:
+        try:
+            group = get_object_or_404(Group,id=group_id)
+            group_code = group.group_code
+            chats =  GroupMessage.objects.filter(group = group)
+        except Exception as e:
+            messages.error(request,str(e))
+            return redirect('group_chat')
+        
+
+    if request.method == "POST":
+        type = request.POST.get('post_type')
+
+        if type == 'create_group':
+            group_name = request.POST.get('groupname')
+            group_code = str(uuid.uuid4())
+            group = Group.objects.create(name=group_name,group_code=group_code)
+            group.members.add(request.user)
+            group.save()
+            print(my_groups)
+
+            
+    
+    return render(request,'groupchat.html',{
+        'my_groups':my_groups,
+        'group':group,
+        'room_code':group_code,
+        'chats':chats,
+    })
 
 def authentication(request):
     registerform = RegisterForm
