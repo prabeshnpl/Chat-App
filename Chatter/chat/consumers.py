@@ -71,11 +71,11 @@ class GroupChat(AsyncWebsocketConsumer):
         self.room_name = f'room_{self.room_code}'
 
         await self.channel_layer.group_add(self.room_name, self.channel_name)
-        self.accept()
+        await self.accept()
         await self.send(json.dumps({"type":'connection','message':'connected'}))
 
     async def disconnect(self, code):
-        self.channel_layer.group_discard(self.room_name,self.channel_name)
+        await self.channel_layer.group_discard(self.room_name,self.channel_name)
         await self.send(json.dumps({'type': 'connection', 'message': 'Successfully disconnected'}))
 
     async def receive(self, text_data=None, bytes_data=None):
@@ -107,11 +107,10 @@ class GroupChat(AsyncWebsocketConsumer):
         # Send the message to WebSocket clients
         message = event['message']
         sender = event['sender']
-        await self.send(json.dumps({'type':'chat','message': message, 'sender': sender}))
+        await self.send(json.dumps({'type':'groupchat','message': message, 'sender': sender}))
 
     @database_sync_to_async
     def save_message(self, groupId, sender, message):
         # Save the message to the database
-        print('save')
         return GroupMessage.objects.create(sender=sender, group=Group.objects.get(id=groupId), message=message)
 

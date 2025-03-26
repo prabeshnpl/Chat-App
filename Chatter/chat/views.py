@@ -41,7 +41,7 @@ def chat(request):
         type = request.POST.get('post_type')
 
         if type == 'add_friend':
-            username = request.POST.get('username')
+            username = request.POST.get('username').strip()
             try:
                 user = get_object_or_404(CustomUser,username=username)
 
@@ -71,7 +71,7 @@ def chat(request):
                 else:messages.error(request,str(e))
 
         elif type == 'delete_friend':
-            username = request.POST.get('username')
+            username = request.POST.get('username').strip()
             try:
                 message = ''
                 user = get_object_or_404(CustomUser,username = username)
@@ -95,12 +95,6 @@ def chat(request):
                 if str(e) == 'No CustomUser matches the given query.':
                     messages.error(request,'User doesn\'t exist')
                 else:messages.error(request,str(e))
-
-        elif type == 'add_group':
-            groupname = request.POST.groupname
-            group = Group.objects.get(name=groupname)
-            group.members = request.user
-            group.save()
 
         return redirect('chat')
 
@@ -132,20 +126,23 @@ def group_chat(request):
         type = request.POST.get('post_type')
 
         if type == 'create_group':
-            group_name = request.POST.get('groupname')
+            group_name = request.POST.get('groupname').strip()
             group_code = str(uuid.uuid4())
             group = Group.objects.create(name=group_name,group_code=group_code)
             group.members.add(request.user)
             group.save()
 
         elif type == 'join_group':
+            print('joining')
             try:
-                group = Group.objects.get(name = request.POST.get('groupname'))
+                group = get_object_or_404(Group, name=request.POST.get('groupname').strip())
                 group.members.add(request.user)
                 group.save()
+                print('joined')
                 messages.success(request,'Successfully joined')
                 return redirect('group_chat')
             except Exception as e:
+                print(str(e))
                 messages.error(request,f"Unexpected error occured : {str(e)}")
                 return redirect('group_chat')
 

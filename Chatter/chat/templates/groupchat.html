@@ -52,7 +52,8 @@
         {% if chats %}
             {% for chat in chats %}
                 <div class="message {% if chat.sender == request.user %} sent {% else %} received {% endif %}">
-                    {{ chat.message }}
+                    <div>[ {{ chat.sender }} ]</div><br>
+                    <div>{{ chat.message }}</div>
                     <div class="message-time-wrapper">
                         <span class="message-time">{{ chat.timestamp }}</span>
                     </div>
@@ -84,7 +85,7 @@
         if(room_code){
             console.log(room_code);
 
-            let socket = new WebSocket(`ws://${window.location.host}/ws/chat/${room_code}/`);
+            let socket = new WebSocket(`ws://${window.location.host}/ws/groupchat/${room_code}/`);
 
             socket.onmessage = (e)=>{
                 data = JSON.parse(e.data);
@@ -99,6 +100,7 @@
                     chatContent.insertAdjacentHTML(
                     'beforeend',
                     `<div class="message ${divClass}">
+                    <div>[ ${data.sender} ]</div><br>
                     ${data.message}
                     <div class="message-time-wrapper">
                         <span class="message-time">now</span>
