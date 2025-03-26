@@ -137,7 +137,17 @@ def group_chat(request):
             group = Group.objects.create(name=group_name,group_code=group_code)
             group.members.add(request.user)
             group.save()
-            print(my_groups)
+
+        elif type == 'join_group':
+            try:
+                group = Group.objects.get(name = request.POST.get('groupname'))
+                group.members.add(request.user)
+                group.save()
+                messages.success(request,'Successfully joined')
+                return redirect('group_chat')
+            except Exception as e:
+                messages.error(request,f"Unexpected error occured : {str(e)}")
+                return redirect('group_chat')
 
             
     

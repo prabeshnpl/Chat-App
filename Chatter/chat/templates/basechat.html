@@ -81,7 +81,7 @@
             <li><div id="addFriendBtn"><i class="bi bi-person-plus"></i> Add Friend</div></li>
             <li><div id="removeFriendBtn"><i class="bi bi-person-dash"></i> Remove Friend</div></li>
             <li><div id="addGroupBtn"><i class="bi bi-people-fill"></i> Create Group</div></li>
-            <li><div id="removeGroupBtn"><i class="bi bi-person-fill-add"></i> Join Group</div></li>
+            <li><div id="joinGroupBtn"><i class="bi bi-person-fill-add"></i> Join Group</div></li>
             <li><a href="#"><i class="bi bi-gear"></i> Settings</a></li>
             <li><a href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
             <li><a href="#"><i class="bi bi-info-circle"></i> About</a></li>
@@ -144,19 +144,19 @@
         </div>
     </div>
 
-    <!-- Delete Group -->
-    <div class="delete-group-popup" id="deleteGroupPopup">
+    <!-- Join Group -->
+    <div class="join-group-popup" id="joinGroupPopup">
         <div class="popup-content">
             <div class="popup-header">
-                <h3>Leave group</h3>
-                <div class="close-popup" id="closeDeleteGroupPopup"><i class="bi bi-x"></i></div>
+                <h3>Join group</h3>
+                <div class="close-popup" id="closeJoinGroupPopup"><i class="bi bi-x"></i></div>
             </div>
             <div class="popup-body">
                 <form method="POST">
                     {% csrf_token %}
-                    <input style="display: none;" value="delete_group" name="post_type">
+                    <input style="display: none;" value="join_group" name="post_type">
                     <input type="text" id="deleteGroupUsername" placeholder="Enter groupname" class="popup-input" name="groupname" required>
-                    <button id="deleteGroupSubmit" class="popup-submit" type="submit">Leave</button>
+                    <button id="joinGroupSubmit" class="popup-submit" type="submit">Join</button>
                 </form>
             </div>
         </div>

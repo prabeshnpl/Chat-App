@@ -32,6 +32,7 @@ body {
     margin-top: 10px; 
     z-index: 200;
     width: 100%;
+    text-align: center;
 }
 
 .alert {
@@ -372,7 +373,7 @@ body {
 
 
 /* Style for add and remove friend popup */
-.add-friend-popup, .delete-friend-popup, .add-group-popup, .delete-group-popup{
+.add-friend-popup, .delete-friend-popup, .add-group-popup, .join-group-popup{
     display: none;
     position: fixed;
     top: 50%;

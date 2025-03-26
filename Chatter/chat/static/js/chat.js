@@ -137,15 +137,15 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('popupOverlay').style.display = 'none';
     });
 
-    //Show Remove Group Popup
-    document.getElementById('removeGroupBtn').addEventListener('click', function() {
-        document.getElementById('deleteGroupPopup').style.display = 'block';
+    //Show Join Group Popup
+    document.getElementById('joinGroupBtn').addEventListener('click', function() {
+        document.getElementById('joinGroupPopup').style.display = 'block';
         document.getElementById('popupOverlay').style.display = 'block';
     });
 
-    // Close Remove Group Popup
-    document.getElementById('closeDeleteGroupPopup').addEventListener('click', function() {
-        document.getElementById('deleteGroupPopup').style.display = 'none';
+    // Close Join Group Popup
+    document.getElementById('closeJoinGroupPopup').addEventListener('click', function() {
+        document.getElementById('joinGroupPopup').style.display = 'none';
         document.getElementById('popupOverlay').style.display = 'none';
     });
 
@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('popupOverlay').style.display = 'none';
         document.getElementById('deleteFriendPopup').style.display = 'none';
         document.getElementById('addGroupPopup').style.display = 'none';
-        document.getElementById('deleteGroupPopup').style.display = 'none';
+        document.getElementById('joinGroupPopup').style.display = 'none';
     });
 
     // Handle back button for small devices
