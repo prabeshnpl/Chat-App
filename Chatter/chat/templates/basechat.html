@@ -39,7 +39,7 @@
         <div class="select-user-bar" id="select-user-bar">
             <div class="nav">
                 <i class="bi bi-list"></i>
-                <div>{{ request.user }}</div>
+                <div style="margin-left: 20px;">{{ request.user }}</div>
             </div>
             
             <!-- Search box -->
@@ -76,7 +76,7 @@
     <div class="toggle-nav" id="toggleNav">
         <div class="close-btn" id="closeNav"><i class="bi bi-x"></i></div>
         <ul>
-            <li id="navfriend"><div id="FriendBtn"><i class="bi bi-person-fill"><a href="{% url 'chat' %}">My Friends</a></i></div></li>
+            <li id="navfriend"><i class="bi bi-person-fill"><a href="{% url 'chat' %}">My Friends</a></i></li>
             <li id="navgroup"><div id="GroupBtn"><i class="bi bi-people-fill"><a href="{% url 'group_chat' %}">My Group</a></i></div></li>
             <li><div id="addFriendBtn"><i class="bi bi-person-plus"></i> Add Friend</div></li>
             <li><div id="removeFriendBtn"><i class="bi bi-person-dash"></i> Remove Friend</div></li>

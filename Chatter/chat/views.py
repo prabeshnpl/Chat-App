@@ -133,18 +133,30 @@ def group_chat(request):
             group.save()
 
         elif type == 'join_group':
-            print('joining')
             try:
                 group = get_object_or_404(Group, name=request.POST.get('groupname').strip())
-                group.members.add(request.user)
-                group.save()
-                print('joined')
-                messages.success(request,'Successfully joined')
-                return redirect('group_chat')
+                if request.user not in group.members.all():
+                    group.members.add(request.user)
+                    group.save()
+                    messages.success(request,'Successfully joined')
+                    # Notify WebSocket consumers about the new user
+                    from asgiref.sync import async_to_sync
+                    from channels.layers import get_channel_layer
+                    
+                    channel_layer = get_channel_layer()
+                    async_to_sync(channel_layer.group_send)(
+                        f'room_{group.group_code}',
+                        {
+                            'type': 'user_joined',
+                            'message': f'{request.user.first_name.upper()} {request.user.last_name.upper()} has joined the group',
+                        }
+                    )
+                else:
+                    messages.error(request,'already in the group')
             except Exception as e:
-                print(str(e))
                 messages.error(request,f"Unexpected error occured : {str(e)}")
-                return redirect('group_chat')
+            
+            return redirect('group_chat')
 
             
     

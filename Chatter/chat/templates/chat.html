@@ -9,7 +9,7 @@
         <div class="chat-image flex"><i class="bi bi-person-fill"></i></div>
         <div class="chat-card-right">
             <div class="chat-card-right-top">
-                <div class="chat-name">{{ f.username }}</div>
+                <div class="chat-name"> {{ f.first_name | upper }} {{ f.last_name | upper }}</div>
                 <div class="chat-time">2:45 PM</div>
             </div>
             <div class="chat-last-message">Hey, are we still meeting today?</div>
@@ -33,7 +33,7 @@
                 <i class="bi bi-person-fill"></i>
             </div>
             <div class="chat-top-bar-left-name-and-last-seen">
-                <div class="chat-top-bar-left-name">{{ friend.username }}</div>
+                <div class="chat-top-bar-left-name">{{ friend.first_name | upper }} {{ friend.last_name | upper }}</div>
                 <div class="chat-top-bar-left-last-seen">Online</div> 
             </div>
         </div>

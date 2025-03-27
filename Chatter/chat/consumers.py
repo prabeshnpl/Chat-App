@@ -95,7 +95,9 @@ class GroupChat(AsyncWebsocketConsumer):
                     {
                         'type': 'send_chat',
                         'message': message,
-                        'sender': sender.username,
+                        'sender_username': sender.username,
+                        'sender_first_name': sender.first_name,
+                        'sender_last_name': sender.last_name,
                     }
                 )
             except FriendShip.DoesNotExist:
@@ -106,8 +108,15 @@ class GroupChat(AsyncWebsocketConsumer):
     async def send_chat(self, event):
         # Send the message to WebSocket clients
         message = event['message']
-        sender = event['sender']
-        await self.send(json.dumps({'type':'groupchat','message': message, 'sender': sender}))
+        sender_username = event['sender_username']
+        sender_first_name = event['sender_first_name']
+        sender_last_name = event['sender_last_name']
+        await self.send(json.dumps({'type':'groupchat','message': message,'username':sender_username ,'sender_first_name': sender_first_name, 'sender_last_name':sender_last_name}))
+    
+    async def user_joined(self, event):
+        # Notify all users in the group about the new user
+        message = event['message']
+        await self.send(json.dumps({'type': 'user_joined', 'message': message}))
 
     @database_sync_to_async
     def save_message(self, groupId, sender, message):
