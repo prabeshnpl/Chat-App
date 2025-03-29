@@ -25,8 +25,8 @@ SECRET_KEY = 'django-insecure-ejizh16%pl#3rbw_#6hus(8&+oevft$sh9%8(cri^oa9i*(8_c
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["https://chat-app-vtpp.onrender.com",'127.0.0.1']
-CSRF_TRUSTED_ORIGINS = ['https://chat-app-vtpp.onrender.com']
+ALLOWED_HOSTS = ['https://chat-app-vtpp.onrender.com','chat-app-vtpp.onrender.com','127.0.0.1']
+CSRF_TRUSTED_ORIGINS = ['https://chat-app-vtpp.onrender.com','chat-app-vtpp.onrender.com']
 
 
 # Application definition
