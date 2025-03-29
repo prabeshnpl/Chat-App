@@ -5,10 +5,13 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q,F
 from .models import CustomUser, Message, FriendShip, Group, GroupMessage
+from django.core.paginator import Paginator
+from django.http import JsonResponse , HttpResponseForbidden
 import uuid
 # Create your views here.
 @login_required()
 def chat(request):
+    
     my_friends = request.user.friends.all()
     not_my_friend = request.user.friend_set.all()
     all_friends = my_friends.union(not_my_friend)
@@ -20,10 +23,40 @@ def chat(request):
             friend = get_object_or_404(CustomUser,id=receiver_id)
             friendship = get_object_or_404(FriendShip,user=request.user,friend=friend)
             room_code = friendship.room_code
-            chats =  Message.objects.filter(Q(sender=request.user,receiver=friend)|Q(sender=friend,receiver=request.user))
+            chats =  Message.objects.filter(Q(sender=request.user,receiver=friend)|Q(sender=friend,receiver=request.user)).order_by('-timestamp')
+
+            page_number = request.GET.get('page',1)
+            paginator = Paginator(chats,20)
+            page = paginator.get_page(page_number)
+
             if friend not in my_friends and request.user not in friend.friends.all():
                 messages.error(request,'Please add the user before trying to message')
                 return redirect('chat')
+            
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                if friend not in my_friends and request.user not in friend.friends.all():
+                    return JsonResponse({'error': 'You are not allowed to chat with this user.'}, status=403)
+
+                message_data = [
+                    {
+                        'id': message.id,
+                        'sender': message.sender.username,
+                        'receiver': message.receiver.username,
+                        'sender_first_name': message.sender.first_name,
+                        'sender_last_name': message.sender.last_name,
+                        'receiver_first_name': message.receiver.first_name,
+                        'receiver_last_name': message.receiver.last_name,
+                        'message': message.message,
+                        'timestamp': message.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+                    }
+                    for message in page
+                ]
+                return JsonResponse({
+                    'messages': message_data,
+                    'has_next': page.has_next(),
+                })
+
+            
 
         except Exception as e:
             if str(e) == 'No CustomUser matches the given query.':

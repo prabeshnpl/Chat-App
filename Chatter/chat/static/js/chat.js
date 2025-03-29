@@ -22,7 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(data => {
                 if(data.messages){
                     data.messages.forEach(chat => {
-                        console.log(chat)
                         let type = '';
                         username = document.getElementById('user').dataset.user;
                         if(username == chat.sender ){
@@ -30,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                         else{type = "received";}
                         chatContent.insertAdjacentHTML(
-                            'beforeend',
+                            'afterbegin',
                             `
                             <div class="message ${type}">
                                 
@@ -42,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             `
                         );
                     });
+                    chatContent.scrollTop = chatContent.scrollHeight;
                 }
 
             })
@@ -53,6 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     loadMessages();
+
     // Scroll to the bottom of the chat-content to show the latest message. Also addes timeout to make sure
     if (chatContent) {
         setTimeout(() => {

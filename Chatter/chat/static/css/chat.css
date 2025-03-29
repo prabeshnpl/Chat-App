@@ -139,13 +139,13 @@ body {
     align-items: center;
     border-radius: var(--border-radius);
     width: 95%;
-    height: auto; /* Allow height to adjust based on content */
+    height: auto;
     background-color: var(--card-bg);
-    margin: 6px; /* Reduced margin between chat cards */
-    padding: 8px; /* Reduced padding inside the chat card */
+    margin: 6px; 
+    padding: 8px; 
     transition: transform var(--transition-speed), background-color var(--transition-speed);
     position: relative;
-    box-sizing: border-box; /* Ensure padding is included in width/height calculations */
+    box-sizing: border-box;
 }
 
 .chat-card:hover, .nav:hover {
@@ -373,8 +373,11 @@ body {
 
 
 /* Style for add and remove friend popup */
-.add-friend-popup, .delete-friend-popup, .add-group-popup, .join-group-popup{
+.add-friend-popup, .delete-friend-popup, .add-group-popup, .join-group-popup {
     display: none;
+    flex-direction: column;
+    justify-content: space-between; 
+    align-items: stretch; 
     position: fixed;
     top: 50%;
     left: 50%;
@@ -384,6 +387,9 @@ body {
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     z-index: 1001;
+    width: 400px;
+    height: 250px; 
+    gap: 15px;
 }
 .addFriendBtn,li{
     cursor: pointer;
@@ -406,14 +412,26 @@ body {
     justify-content: space-between;
     align-items: center;
     color: black;
+    margin-bottom: 10px; 
 }
+
+.popup-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    gap: 10px; 
+}
+
 .popup-input {
     width: 100%;
     padding: 10px;
     margin: 10px 0;
     border: 1px solid #ccc;
     border-radius: 4px;
+    flex: 0;
 }
+
 .popup-submit {
     width: 100%;
     padding: 10px;
@@ -422,6 +440,7 @@ body {
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    flex: 0; 
 }
 .popup-submit:hover {
     background: #0056b3;
@@ -442,7 +461,7 @@ body {
 
 .chat-content {
     display: flex;
-    flex-direction: column-reverse; /* Reverse the order of messages */
+    flex-direction: column-reverse; 
     height: calc(100% - 140px);
     width: calc(100% - 20px);
     border-radius: var(--border-radius);
@@ -450,7 +469,7 @@ body {
     padding: 15px;
     box-sizing: border-box;
     background-color: var(--card-bg);
-    overflow-y: auto; /* Enable vertical scrolling */
+    overflow-y: auto; 
 }
 
 .chat-top-bar, .chat-bottom-message-bar {

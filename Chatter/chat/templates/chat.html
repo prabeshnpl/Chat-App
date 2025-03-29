@@ -57,17 +57,6 @@
             Today
         </div>
         
-        {% if chats %}
-            {% for chat in chats %}
-                <div class="message {% if chat.sender == request.user %} sent {% else %} received {% endif %}">
-                    {{ chat.message }}
-                    <div class="message-time-wrapper">
-                        <span class="message-time">{{ chat.timestamp }}</span>
-                    </div>
-                </div>
-            {% endfor %}
-        {% endif %}
-        
     </div>
     
     <form class="chat-bottom-message-bar" method="post" id="chatForm">

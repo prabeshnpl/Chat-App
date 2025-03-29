@@ -12,6 +12,10 @@
     <link rel="stylesheet" href="{% static 'css/chat.css' %}">
 </head>
 <body>
+    
+    <input id="user" type="hidden" data-user="{{ request.user.username | default:'' }}">
+
+    
     <!-- Any messages -->
     {% if messages %}
     <div class="messages">
@@ -91,74 +95,66 @@
 
     <!-- Add Friend Popup -->
     <div class="add-friend-popup" id="addFriendPopup">
-        <div class="popup-content">
-            <div class="popup-header">
-                <h3>Add Friend</h3>
-                <div class="close-popup" id="closeAddFriendPopup"><i class="bi bi-x"></i></div>
-            </div>
-            <div class="popup-body">
-                <form method="POST">
-                    {% csrf_token %}
-                    <input style="display: none;" value="add_friend" name="post_type">
-                    <input type="text" id="addfriendUsername" placeholder="Enter username" class="popup-input" name="username" required>
-                    <button id="addFriendSubmit" class="popup-submit" type="submit">Add</button>
-                </form>
-            </div>
+        <div class="popup-header">
+            <h3>Add Friend</h3>
+            <div class="close-popup" id="closeAddFriendPopup"><i class="bi bi-x"></i></div>
+        </div>
+        <div class="popup-body">
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" value="add_friend" name="post_type">
+                <input type="text" id="addfriendUsername" placeholder="Enter username" class="popup-input" name="username" required><br><br>
+                <button id="addFriendSubmit" class="popup-submit" type="submit">Add</button>
+            </form>
         </div>
     </div>
 
     <!-- Create Group Popup -->
     <div class="add-group-popup" id="addGroupPopup">
-        <div class="popup-content">
-            <div class="popup-header">
-                <h3>Create Group</h3>
-                <div class="close-popup" id="closeAddGroupPopup"><i class="bi bi-x"></i></div>
-            </div>
-            <div class="popup-body">
-                <form method="POST">
-                    {% csrf_token %}
-                    <input style="display: none;" value="create_group" name="post_type">
-                    <input type="text" id="groupName" placeholder="Enter GroupName(Must be unique)" class="popup-input" name="groupname" required>
-                    <p style="color: red;font-size: small;">Note: Share your groupname with others to let them join.</p><br>
-                    <button id="addGroupSubmit" class="popup-submit" type="submit">Create</button>
-                </form>
-            </div>
+        <div class="popup-header">
+            <h3>Create Group</h3>
+            <div class="close-popup" id="closeAddGroupPopup"><i class="bi bi-x"></i></div>
+        </div>
+        <div class="popup-body">
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" value="create_group" name="post_type">
+                <input type="text" id="groupName" placeholder="Enter GroupName(Must be unique)" class="popup-input" name="groupname" required><br><br>
+                <p style="color: red;font-size: small;">Note: Share your groupname with others to let them join.</p><br>
+                <button id="addGroupSubmit" class="popup-submit" type="submit">Create</button>
+            </form>
         </div>
     </div>
 
     <!-- Delete Friend -->
     <div class="delete-friend-popup" id="deleteFriendPopup">
-        <div class="popup-content">
-            <div class="popup-header">
-                <h3>Delete Friend</h3>
-                <div class="close-popup" id="closeDeleteFriendPopup"><i class="bi bi-x"></i></div>
-            </div>
-            <div class="popup-body">
-                <form method="POST">
-                    {% csrf_token %}
-                    <input style="display: none;" value="delete_friend" name="post_type">
-                    <input type="text" id="deletefriendUsername" placeholder="Enter username" class="popup-input" name="username" required>
-                    <button id="deleteFriendSubmit" class="popup-submit" type="submit">Remove</button>
-                </form>
-            </div>
+        <div class="popup-header">
+            <h3>Delete Friend</h3>
+            <div class="close-popup" id="closeDeleteFriendPopup"><i class="bi bi-x"></i></div>
+        </div>
+        <div class="popup-body">
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" value="delete_friend" name="post_type">
+                <input type="text" id="deletefriendUsername" placeholder="Enter username" class="popup-input" name="username" required><br><br>
+                <button id="deleteFriendSubmit" class="popup-submit" type="submit">Remove</button>
+            </form>
         </div>
     </div>
 
     <!-- Join Group -->
     <div class="join-group-popup" id="joinGroupPopup">
-        <div class="popup-content">
-            <div class="popup-header">
-                <h3>Join group</h3>
-                <div class="close-popup" id="closeJoinGroupPopup"><i class="bi bi-x"></i></div>
-            </div>
-            <div class="popup-body">
-                <form method="POST">
-                    {% csrf_token %}
-                    <input style="display: none;" value="join_group" name="post_type">
-                    <input type="text" id="deleteGroupUsername" placeholder="Enter groupname" class="popup-input" name="groupname" required>
-                    <button id="joinGroupSubmit" class="popup-submit" type="submit">Join</button>
-                </form>
-            </div>
+        <div class="popup-header">
+            <h3>Join group</h3>
+            <div class="close-popup" id="closeJoinGroupPopup"><i class="bi bi-x"></i></div>
+        </div>
+        <div class="popup-body">
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" value="join_group" name="post_type">
+                <input type="text" id="deleteGroupUsername" placeholder="Enter groupname" class="popup-input" name="groupname" required><br><br>
+                <button id="joinGroupSubmit" class="popup-submit" type="submit">Join</button>
+            </form>
         </div>
     </div>
     
