@@ -4,9 +4,56 @@ document.addEventListener('DOMContentLoaded', () => {
     const selectUserBar = document.getElementById('select-user-bar');
     const receiverIdElement = document.getElementsByClassName('active')[0];
     const receiverId = receiverIdElement ? receiverIdElement.dataset.slug : null;
-
-    // Scroll to the bottom of the chat-content to show the latest message. Also addes timeout to make sure
     const chatContent = document.querySelector('.chat-content');
+    let page=1;
+    let loading=false;
+
+    const loadMessages = () => {
+        if(loading) return;
+        loading = true;
+        const baseUrl = window.location.origin;
+        if(receiverId){
+            fetch(`${baseUrl}/?id=${receiverId}&page=${page}`,{
+                headers:{
+                    'X-Requested-With':'XMLHttpRequest',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.messages){
+                    data.messages.forEach(chat => {
+                        console.log(chat)
+                        let type = '';
+                        username = document.getElementById('user').dataset.user;
+                        if(username == chat.sender ){
+                            type = "sent";
+                        }
+                        else{type = "received";}
+                        chatContent.insertAdjacentHTML(
+                            'beforeend',
+                            `
+                            <div class="message ${type}">
+                                
+                                ${chat.message}
+                                <div class="message-time-wrapper">
+                                    <span class="message-time">${chat.timestamp}</span>
+                                </div>
+                            </div>
+                            `
+                        );
+                    });
+                }
+
+            })
+            .catch(error => {
+                console.log('error fetching messages: ',error);
+            });
+            
+        }
+    }
+
+    loadMessages();
+    // Scroll to the bottom of the chat-content to show the latest message. Also addes timeout to make sure
     if (chatContent) {
         setTimeout(() => {
             chatContent.scrollTop = chatContent.scrollHeight;
@@ -103,7 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Show Add Friend Popup
     document.getElementById('addFriendBtn').addEventListener('click', function() {
-        document.getElementById('addFriendPopup').style.display = 'block';
+        document.getElementById('addFriendPopup').style.display = 'flex';
         document.getElementById('popupOverlay').style.display = 'block';
     });
 
@@ -115,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     //Show Remove Friend Popup
     document.getElementById('removeFriendBtn').addEventListener('click',()=>{
-        document.getElementById('deleteFriendPopup').style.display = 'block';
+        document.getElementById('deleteFriendPopup').style.display = 'flex';
         document.getElementById('popupOverlay').style.display = 'block';
     })
 
@@ -127,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     //Show Add Group Popup
     document.getElementById('addGroupBtn').addEventListener('click', function() {
-        document.getElementById('addGroupPopup').style.display = 'block';
+        document.getElementById('addGroupPopup').style.display = 'flex';
         document.getElementById('popupOverlay').style.display = 'block';
     });
 
@@ -139,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     //Show Join Group Popup
     document.getElementById('joinGroupBtn').addEventListener('click', function() {
-        document.getElementById('joinGroupPopup').style.display = 'block';
+        document.getElementById('joinGroupPopup').style.display = 'flex';
         document.getElementById('popupOverlay').style.display = 'block';
     });
 
