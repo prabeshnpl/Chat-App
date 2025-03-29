@@ -88,7 +88,7 @@
     
     if (room_code) {
         console.log(room_code)
-        let socket = new WebSocket(`ws://${window.location.host}/ws/chat/${room_code}/`);
+        let socket = new WebSocket(`wss://${window.location.host}/ws/chat/${room_code}/`);
 
         socket.onmessage = (e)=>{
             data = JSON.parse(e.data);
