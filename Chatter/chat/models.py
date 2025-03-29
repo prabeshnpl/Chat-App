@@ -27,6 +27,7 @@ class FriendShip(models.Model):
 
 class Group(models.Model):
     name = models.CharField(max_length=64)
+    group_id = models.CharField(max_length=6,default=None,null=True,blank=True)
     members = models.ManyToManyField(CustomUser,related_name='all_groups')
     group_code = models.CharField(max_length=128)
     created_at = models.DateTimeField(auto_now_add=True)

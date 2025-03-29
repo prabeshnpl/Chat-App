@@ -33,7 +33,7 @@
                 <i class="bi bi-person-fill"></i>
             </div>
             <div class="chat-top-bar-left-name-and-last-seen">
-                <div class="chat-top-bar-left-name">{{ friend.first_name | upper }} {{ friend.last_name | upper }}</div>
+                <div class="chat-top-bar-left-name">{{ friend.first_name | upper }} {{ friend.last_name | upper }} <span>(username : {{ friend.username }})</span></div>
                 <div class="chat-top-bar-left-last-seen">Online</div> 
             </div>
         </div>
@@ -41,7 +41,7 @@
             <div class="video-call flex"><i class="bi bi-camera-video-fill"></i></div>
             <div class="call flex"><i class="bi bi-telephone-fill"></i></div>
             <div class="search flex"><i class="bi bi-search"></i></div>
-            <div class="more-options flex"><i class="bi bi-three-dots-vertical"></i></div>
+            <div class="more-options flex""><i class="bi bi-three-dots-vertical"></i></div>
         </div>
     </div>
     <!-- Display warning message if the user isn't your friend. -->
@@ -62,6 +62,10 @@
     <form class="chat-bottom-message-bar" method="post" id="chatForm">
         {% csrf_token %}
         <!-- Attachment buttons -->
+        {% if friend not in my_friend_only %}
+            <input type="hidden" value="noFriendMessage" name="post_type">
+        {% endif %}
+
         <div class="attach-file flex"><i class="bi bi-paperclip"></i></div>
         <div class="emoji flex"><i class="bi bi-emoji-smile"></i></div>
 
@@ -107,6 +111,16 @@
                 );
                 // To auto scroll when new div is added!!
                 chatContent.scrollTop = chatContent.scrollHeight;
+            }
+            if(data.type == 'user_joined'){
+                chatContent.insertAdjacentHTML(
+                    'beforeend',
+                    `<div style="width:100%;height:50px;">
+                    <p>${data.message}</p><br>
+                    </div>`
+                    );
+                    // To auto scroll when new div is added!!
+                    chatContent.scrollTop = chatContent.scrollHeight;
             }
         }
 

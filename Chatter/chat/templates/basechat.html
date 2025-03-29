@@ -45,7 +45,7 @@
         <div class="select-user-bar" id="select-user-bar">
             <div class="nav">
                 <i class="bi bi-list"></i>
-                <div style="margin-left: 20px;">{{ request.user }}</div>
+                <div style="margin-left: 20px;">username = {{ request.user }}</div>
             </div>
             
             <!-- Search box -->
@@ -105,6 +105,7 @@
             <form method="POST">
                 {% csrf_token %}
                 <input type="hidden" value="add_friend" name="post_type">
+                <label for="addfriendUsername">Username</label>
                 <input type="text" id="addfriendUsername" placeholder="Enter username" class="popup-input" name="username" required><br><br>
                 <button id="addFriendSubmit" class="popup-submit" type="submit">Add</button>
             </form>
@@ -121,8 +122,11 @@
             <form method="POST">
                 {% csrf_token %}
                 <input type="hidden" value="create_group" name="post_type">
-                <input type="text" id="groupName" placeholder="Enter GroupName(Must be unique)" class="popup-input" name="groupname" required><br><br>
-                <p style="color: red;font-size: small;">Note: Share your groupname with others to let them join.</p><br>
+                <label for="groupName">GroupName</label>
+                <input type="text" id="groupName" placeholder="Enter GroupName" class="popup-input" name="groupname" required><br><br>
+                <label for="groupId">Id</label>
+                <input type="text" id="groupId" placeholder="Enter GroupId(Must be unique)" class="popup-input" name="groupId" maxlength="6" required><br><br>
+                <p style="color: red;font-size: small;">Note: Share your GroupId with others to let them join.</p><br>
                 <button id="addGroupSubmit" class="popup-submit" type="submit">Create</button>
             </form>
         </div>
@@ -138,6 +142,7 @@
             <form method="POST">
                 {% csrf_token %}
                 <input type="hidden" value="delete_friend" name="post_type">
+                <label for="deletefriendUsername">Username</label>
                 <input type="text" id="deletefriendUsername" placeholder="Enter username" class="popup-input" name="username" required><br><br>
                 <button id="deleteFriendSubmit" class="popup-submit" type="submit">Remove</button>
             </form>
@@ -154,7 +159,8 @@
             <form method="POST">
                 {% csrf_token %}
                 <input type="hidden" value="join_group" name="post_type">
-                <input type="text" id="deleteGroupUsername" placeholder="Enter groupname" class="popup-input" name="groupname" required><br><br>
+                <label for="joinGroupId">GroupId</label>
+                <input type="text" id="joinGroupId" placeholder="Enter groupId" class="popup-input" name="groupId" maxlength="6" required><br><br>
                 <button id="joinGroupSubmit" class="popup-submit" type="submit">Join</button>
             </form>
         </div>

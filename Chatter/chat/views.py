@@ -35,7 +35,7 @@ def chat(request):
             
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                 if friend not in my_friends and request.user not in friend.friends.all():
-                    return JsonResponse({'error': 'You are not allowed to chat with this user.'}, status=403)
+                    return HttpResponseForbidden({'error': 'You are not allowed to chat with this user.'}, status=403)
 
                 message_data = [
                     {
@@ -54,9 +54,7 @@ def chat(request):
                 return JsonResponse({
                     'messages': message_data,
                     'has_next': page.has_next(),
-                })
-
-            
+                })            
 
         except Exception as e:
             if str(e) == 'No CustomUser matches the given query.':
@@ -131,6 +129,30 @@ def chat(request):
 
         elif type == 'create_group' or type == 'join_group':
             messages.error(request,'Please create or join group from "My group" section. Thank you')
+
+        elif type == 'noFriendMessage':
+            friend = CustomUser.objects.get(id=request.GET.get('id'))
+            friendship = FriendShip.objects.get(user=friend,friend=request.user)
+            room_code = friendship.room_code
+
+            request.user.friends.add(friend)
+            reverse_friendship = FriendShip.objects.get(user=request.user,friend=friend)
+            reverse_friendship.room_code = room_code
+            reverse_friendship.save()
+            messages.success(request,f"You accepted {friend.first_name} {friend.last_name}'s request.")
+
+            from asgiref.sync import async_to_sync
+            from channels.layers import get_channel_layer
+            
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                f'room_{room_code}',
+                {
+                    'type': 'user_joined',
+                    'message': f'{request.user.first_name.upper()} {request.user.last_name.upper()} has accepted {friend.first_name.upper()} {friend.last_name.upper()}\'s request.',
+                }
+            )
+
         return redirect('chat')
 
     return render(request,'chat.html',{
@@ -182,8 +204,9 @@ def group_chat(request):
 
         if type == 'create_group':
             group_name = request.POST.get('groupname').strip()
+            group_id = request.POST.get('groupId')
             group_code = str(uuid.uuid4())
-            group = Group.objects.create(name=group_name,group_code=group_code)
+            group = Group.objects.create(name=group_name,group_code=group_code,group_id=group_id)
             group.members.add(request.user)
             group.save()
             messages.success(request,'Successfully created')
@@ -191,7 +214,7 @@ def group_chat(request):
 
         elif type == 'join_group':
             try:
-                group = get_object_or_404(Group, name=request.POST.get('groupname').strip())
+                group = get_object_or_404(Group, group_id = request.POST.get('groupId').strip())
                 if request.user not in group.members.all():
                     group.members.add(request.user)
                     group.save()

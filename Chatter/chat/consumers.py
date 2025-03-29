@@ -56,6 +56,11 @@ class Chat(AsyncWebsocketConsumer):
         sender = event['sender']
         await self.send(json.dumps({'type':'chat','message': message, 'sender': sender}))
 
+    async def user_joined(self, event):
+        # Notify all users in the group about the new user
+        message = event['message']
+        await self.send(json.dumps({'type': 'user_joined', 'message': message}))
+
     @database_sync_to_async
     def get_friendship(self,receiverId):
         return CustomUser.objects.get(id=receiverId)
