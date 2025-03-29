@@ -129,31 +129,53 @@ def chat(request):
                     messages.error(request,'User doesn\'t exist')
                 else:messages.error(request,str(e))
 
+        elif type == 'create_group' or type == 'join_group':
+            messages.error(request,'Please create or join group from "My group" section. Thank you')
         return redirect('chat')
 
     return render(request,'chat.html',{
         'friends':all_friends,
         'my_friend_only':my_friends,
-        'chats':chats,
         'friend':friend,
         'room_code':room_code,
+        'chat_type':'solo_chat',
         })
 
 @login_required
 def group_chat(request):
     my_groups = request.user.all_groups.all()
     group_id = request.GET.get('id')
-    chats = group_code = group = None
+    chats = group_code = group = None    
 
     if group_id:
         try:
             group = get_object_or_404(Group,id=group_id)
             group_code = group.group_code
-            chats =  GroupMessage.objects.filter(group = group)
+            chats =  GroupMessage.objects.filter(group = group).order_by('-timestamp')
+            page_number = request.GET.get('page',1)
+            paginator = Paginator(chats,20)
+            page = paginator.get_page(page_number)
+            
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                message_data = [
+                {
+                    'id': message.id,
+                    'sender': message.sender.username,
+                    'sender_first_name': message.sender.first_name,
+                    'sender_last_name': message.sender.last_name,
+                    'message': message.message,
+                    'timestamp': message.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+                }
+                for message in page
+                ]
+                return JsonResponse({
+                    'messages': message_data,
+                    'has_next': page.has_next(),
+                })
+            
         except Exception as e:
             messages.error(request,str(e))
-            return redirect('group_chat')
-        
+            return redirect('group_chat')       
 
     if request.method == "POST":
         type = request.POST.get('post_type')
@@ -164,6 +186,8 @@ def group_chat(request):
             group = Group.objects.create(name=group_name,group_code=group_code)
             group.members.add(request.user)
             group.save()
+            messages.success(request,'Successfully created')
+            return redirect('group_chat')
 
         elif type == 'join_group':
             try:
@@ -187,8 +211,15 @@ def group_chat(request):
                 else:
                     messages.error(request,'already in the group')
             except Exception as e:
-                messages.error(request,f"Unexpected error occured : {str(e)}")
+                if(str(e)) == 'No Group matches the given query.':
+                    messages.error(request,'Invalid group name or id.')
+                else: 
+                    messages.error(request,f"Unexpected error occured : {str(e)}")
             
+            return redirect('group_chat')
+
+        elif type == 'add_friend' or type == 'delete_friend':
+            messages.error(request,'Please add or delete friend from "My friend" section. Thank you')
             return redirect('group_chat')
 
             
@@ -197,7 +228,7 @@ def group_chat(request):
         'my_groups':my_groups,
         'group':group,
         'room_code':group_code,
-        'chats':chats,
+        'chat_type':'group_chat',
     })
 
 def authentication(request):

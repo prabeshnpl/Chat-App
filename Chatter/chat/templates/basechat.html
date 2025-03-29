@@ -14,6 +14,8 @@
 <body>
     
     <input id="user" type="hidden" data-user="{{ request.user.username | default:'' }}">
+    <input id="chatType" type="hidden" data-chat-type="{{ chat_type | default:'' }}">
+
 
     
     <!-- Any messages -->

@@ -7,13 +7,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatContent = document.querySelector('.chat-content');
     let page=1;
     let loading=false;
+    const chatType = document.getElementById('chatType').dataset.chatType 
 
     const loadMessages = () => {
         if(loading) return;
         loading = true;
         const baseUrl = window.location.origin;
+        let fetchUrl = '';
+        let userDetailDiv = '';
+        if(chatType == 'solo_chat'){
+            fetchUrl = `${baseUrl}/?id=${receiverId}&page=${page}`;
+        }
+        else if(chatType == 'group_chat'){
+            fetchUrl = `${baseUrl}/group/?id=${receiverId}&page=${page}`;
+        }
         if(receiverId){
-            fetch(`${baseUrl}/?id=${receiverId}&page=${page}`,{
+            fetch(fetchUrl,{
                 headers:{
                     'X-Requested-With':'XMLHttpRequest',
                 },
@@ -27,12 +36,18 @@ document.addEventListener('DOMContentLoaded', () => {
                         if(username == chat.sender ){
                             type = "sent";
                         }
-                        else{type = "received";}
+                        else{
+                            type = "received";
+                        }
+                        if(chatType == 'group_chat'){
+                            userDetailDiv = `<div>${chat.sender_first_name} ${ chat.sender_last_name}</div>`
+                        }
+
                         chatContent.insertAdjacentHTML(
                             'afterbegin',
                             `
                             <div class="message ${type}">
-                                
+                                ${userDetailDiv}<br>
                                 ${chat.message}
                                 <div class="message-time-wrapper">
                                     <span class="message-time">${chat.timestamp}</span>
@@ -42,6 +57,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         );
                     });
                     chatContent.scrollTop = chatContent.scrollHeight;
+                    if (!data.has_next) {
+                        chatContent.removeEventListener('scroll', handleScroll);
+                    }else{
+                        page++; // Increment the page number for the next page
+                    }
                 }
 
             })
@@ -50,14 +70,89 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             
         }
+        loading=false;
     }
 
     loadMessages();
+    
 
-    // Scroll to the bottom of the chat-content to show the latest message. Also addes timeout to make sure
+    const loadOldMessages = () => {
+        if (loading) return;
+        loading = true;
+        const baseUrl = window.location.origin;
+        let fetchUrl = '';
+        let userDetailDiv = '';
+        if(chatType == 'solo_chat'){
+            fetchUrl = `${baseUrl}/?id=${receiverId}&page=${page}`;
+        }
+        else if(chatType == 'group_chat'){
+            fetchUrl = `${baseUrl}/group/?id=${receiverId}&page=${page}`;
+        }
+        if (receiverId) {
+            fetch(fetchUrl, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.messages) {
+                    const previousScrollHeight = chatContent.scrollHeight;
+    
+                    data.messages.forEach(chat => {
+                        let type = '';
+                        username = document.getElementById('user').dataset.user;
+                        if (username == chat.sender) {
+                            type = "sent";
+                        } else {
+                            type = "received";
+                        }
+                        if(chatType == 'group_chat'){
+                            userDetailDiv = `<div>${chat.sender_first_name} ${ chat.sender_last_name}</div>`
+                        }
+                        chatContent.insertAdjacentHTML(
+                            'afterbegin', // Prepend older messages to the top
+                            `
+                            <div class="message ${type}">
+                                ${userDetailDiv}<br>
+                                ${chat.message}
+                                <div class="message-time-wrapper">
+                                    <span class="message-time">${chat.timestamp}</span>
+                                </div>
+                            </div>
+                            `
+                        );
+                    });
+    
+                    // Maintain the scroll position after prepending messages
+                    chatContent.scrollTop = chatContent.scrollHeight - previousScrollHeight;
+    
+                    // Check if there are more messages to load
+                    if (!data.has_next) {
+                        chatContent.removeEventListener('scroll', handleScroll);
+                    }else{
+                        page++; // Increment the page number for the next page
+                    }
+                }
+                loading = false;
+            })
+            .catch(error => {
+                console.error('Error fetching old messages:', error);
+                loading = false;
+            });
+        }
+    };
+    
+    
+
+    const handleScroll = () => {
+        if (chatContent.scrollTop === 0 && !loading) {
+            loadOldMessages(); // Fetch older messages
+        }
+    }
     if (chatContent) {
         setTimeout(() => {
-            chatContent.scrollTop = chatContent.scrollHeight;
+        chatContent.addEventListener('scroll',handleScroll);
         }, 0);
     }
     
