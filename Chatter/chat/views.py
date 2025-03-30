@@ -372,7 +372,7 @@ def authentication(request):
             if form.is_valid():
                 password = form.cleaned_data['password']
                 confirm_password = form.cleaned_data['confirm_password']
-                if len(password<8):
+                if len(password) < 8:
                     messages.error(request,"Password length must be greater or equal to 8.")
                     return redirect('login')
                 if password and confirm_password and password == confirm_password:
