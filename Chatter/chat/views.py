@@ -127,8 +127,44 @@ def chat(request):
                     messages.error(request,'User doesn\'t exist')
                 else:messages.error(request,str(e))
 
-        elif type == 'create_group' or type == 'join_group':
-            messages.error(request,'Please create or join group from "My group" section. Thank you')
+        elif type == 'create_group':
+            group_name = request.POST.get('groupname').strip()
+            group_id = request.POST.get('groupId')
+            group_code = str(uuid.uuid4())
+            group = Group.objects.create(name=group_name,group_code=group_code,group_id=group_id)
+            group.members.add(request.user)
+            group.save()
+            messages.success(request,'Successfully created')
+            return redirect('group_chat')
+
+        elif type == 'join_group':
+            try:
+                group = get_object_or_404(Group, group_id = request.POST.get('groupId').strip())
+                if request.user not in group.members.all():
+                    group.members.add(request.user)
+                    group.save()
+                    messages.success(request,'Successfully joined')
+                    # Notify WebSocket consumers about the new user
+                    from asgiref.sync import async_to_sync
+                    from channels.layers import get_channel_layer
+                    
+                    channel_layer = get_channel_layer()
+                    async_to_sync(channel_layer.group_send)(
+                        f'room_{group.group_code}',
+                        {
+                            'type': 'user_joined',
+                            'message': f'{request.user.first_name.upper()} {request.user.last_name.upper()} has joined the group',
+                        }
+                    )
+                else:
+                    messages.error(request,'already in the group')
+            except Exception as e:
+                if(str(e)) == 'No Group matches the given query.':
+                    messages.error(request,'Invalid group name or id.')
+                else: 
+                    messages.error(request,f"Unexpected error occured : {str(e)}")
+            
+            return redirect('group_chat')
 
         elif type == 'noFriendMessage':
             friend = CustomUser.objects.get(id=request.GET.get('id'))
@@ -165,6 +201,7 @@ def chat(request):
 
 @login_required
 def group_chat(request):
+    my_friends = request.user.friends.all()
     my_groups = request.user.all_groups.all()
     group_id = request.GET.get('id')
     chats = group_code = group = None    
@@ -241,9 +278,61 @@ def group_chat(request):
             
             return redirect('group_chat')
 
-        elif type == 'add_friend' or type == 'delete_friend':
-            messages.error(request,'Please add or delete friend from "My friend" section. Thank you')
-            return redirect('group_chat')
+        elif type == 'add_friend':
+            username = request.POST.get('username').strip()
+            try:
+                user = get_object_or_404(CustomUser,username=username)
+
+                if user in request.user.friends.all():
+                    messages.error(request,'Already friends or Request already sent!')
+                else:
+                    this_room_code = None
+                    request.user.friends.add(user)
+                    if request.user in user.friends.all():
+                        this_friendship = FriendShip.objects.get(user = user , friend = request.user)
+                        this_room_code = this_friendship.room_code
+                    else:    
+                        # uuid4 to create unique id
+                        this_room_code = str(uuid.uuid4())
+                    if FriendShip.objects.filter(user=request.user,friend=user).exists():
+                        this_friend = FriendShip.objects.get(user=request.user,friend=user)
+                        this_friend.room_code = this_room_code
+                        this_friend.save()
+                    else:
+                        FriendShip.objects.create(user=request.user,friend=user,room_code = room_code)
+                    messages.success(request,'Request sent successfully')
+
+            except Exception as e:
+
+                if str(e) == 'No CustomUser matches the given query.':
+                    messages.error(request,'User doesn\'t exist')
+                else:messages.error(request,str(e))
+
+        elif type == 'delete_friend':
+            username = request.POST.get('username').strip()
+            try:
+                message = ''
+                user = get_object_or_404(CustomUser,username = username)
+
+                if user not in my_friends and request.user not in user.friends.all():
+                    raise ValueError('No CustomUser matches the given query.')
+                
+                if FriendShip.objects.filter(user=request.user, friend=user).exists():
+                    FriendShip.objects.get(user=request.user, friend=user).delete()
+                    message = 'User removed from your friend list.'
+
+                if FriendShip.objects.filter(user=user, friend=request.user).exists():
+                    FriendShip.objects.get(user=user, friend=request.user).delete()
+                    message += ' You have been removed from the user\'s friend list.'
+
+                if message:
+                    Message.objects.filter(Q(sender=request.user, receiver=user) | Q(sender=user, receiver=request.user)).delete()
+                    messages.success(request,message)
+
+            except Exception as e:
+                if str(e) == 'No CustomUser matches the given query.':
+                    messages.error(request,'User doesn\'t exist')
+                else:messages.error(request,str(e))
 
             
     
@@ -283,6 +372,9 @@ def authentication(request):
             if form.is_valid():
                 password = form.cleaned_data['password']
                 confirm_password = form.cleaned_data['confirm_password']
+                if len(password<8):
+                    messages.error(request,"Password length must be greater or equal to 8.")
+                    return redirect('login')
                 if password and confirm_password and password == confirm_password:
                     form.save()
                     messages.success(request,'Registration successful')
