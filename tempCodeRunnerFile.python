@@ -1,0 +1,4 @@
+password = 'asfd'
+print(len(password))
+if(len(password)<8):
+    print('f')

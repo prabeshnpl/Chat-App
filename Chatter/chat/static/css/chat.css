@@ -375,7 +375,6 @@ label{
     display: block;
 }
 
-
 /* Style for add and remove friend popup */
 .add-friend-popup, .delete-friend-popup, .add-group-popup, .join-group-popup {
     display: none;
@@ -696,6 +695,16 @@ label{
 
 /* Small screen optimization */
 @media(max-width: 768px) {
+    .text-message {
+        width: 100%; /* Make the input field take up the full width */
+        font-size: 14px; /* Adjust font size for smaller screens */
+        padding: 8px; /* Reduce padding for smaller screens */
+    }
+
+    .chat-bottom-message-bar {
+        flex-wrap: wrap; /* Allow wrapping of elements if needed */
+        gap: 10px; /* Add spacing between elements */
+    }
     .mobile-nav {
         position: absolute;
         top: 0;
