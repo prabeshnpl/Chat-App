@@ -778,12 +778,3 @@ label{
         flex-shrink: 0;
     }
 }
-
-/* For minimize of tabs */
-@media (min-width:500px) and (max-width:768px)
-{
-    /* .right-content {
-        display: none;
-        padding-top: 45px;
-    } */
-}
