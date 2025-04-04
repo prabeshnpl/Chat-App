@@ -9,6 +9,13 @@ document.addEventListener('DOMContentLoaded', () => {
     let loading=false;
     const chatType = document.getElementById('chatType').dataset.chatType 
 
+    const messages = document.getElementById('messages')
+    if(messages){
+        setTimeout(() => {
+            messages.style.display = 'none'; // Hide the messages after 3-4 seconds
+        }, 2000);
+    }
+
     const loadMessages = () => {
         if(loading) return;
         loading = true;

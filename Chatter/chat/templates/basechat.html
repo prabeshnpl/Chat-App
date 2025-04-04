@@ -20,9 +20,9 @@
     
     <!-- Any messages -->
     {% if messages %}
-    <div class="messages">
+    <div class="messages" id="messages">
         {% for message in messages %}
-            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+            <div class="alert {% if message.tags %} alert-{{ message.tags }}{% endif %}">
                 {{ message }}
             </div>
         {% endfor %}
@@ -70,6 +70,7 @@
             <div class="blank-content">
                 <i class="bi bi-chat-text"></i>
                 <h3>No messages yet</h3><br>
+                <img src="{% static 'images/Messages-pana.png' %}" alt="Error" height="400" width="400">
                 <p>Start a conversation by sending a message</p>
             </div>
             {% endif %}

@@ -18,6 +18,12 @@
     </div>
     {% empty %}
     <div>No friends. Try adding some.</div>
+    <div class="blank-content-for-mobile">
+        <i class="bi bi-chat-text"></i>
+        <h3>No messages yet</h3><br>
+        <img src="{% static 'images/Messages-pana.png' %}" alt="Error" height="200" width="200">
+        <p>Start a conversation by sending a message</p>
+    </div>
     {% endfor %}
 
 {% endblock %}
@@ -88,7 +94,7 @@
     
     if (room_code) {
         console.log(room_code)
-        let socket = new WebSocket(`wss://${window.location.host}/ws/chat/${room_code}/`);
+        let socket = new WebSocket(`ws://${window.location.host}/ws/chat/${room_code}/`);
 
         socket.onmessage = (e)=>{
             data = JSON.parse(e.data);

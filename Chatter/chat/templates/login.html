@@ -30,14 +30,14 @@
             <div class="card-body">
                 <!-- Login Form -->
                 <div class="tab-content active" id="login-tab">
-                    
-                    <div class="form-message {{ message.tags }}" id="login-error" style="{% if not messages %}display: none;{% else %}display: block;{% endif %}">
-                         {% if messages %}
-                            {% for message in messages %}
-                                {{ message }}
-                            {% endfor %}
-                         {% endif %}
-                    </div>
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="form-message {{ message.tags }}" id="login-error" style="{% if not messages %}display: none;{% else %}display: block;{% endif %}">                            
+                                    {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
                     
                     <form id="login-form" method="POST">
                         {% csrf_token %}
