@@ -90,16 +90,42 @@
     
     if(id){
     const roomIdElement = document.getElementById('roomCode');
+    const chatContent = document.getElementById('chatContent');
     const room_code = roomIdElement ? roomIdElement.dataset.roomCode : null;
     
     if (room_code) {
         console.log(room_code)
         let socket = new WebSocket(`wss://${window.location.host}/ws/chat/${room_code}/`);
+        const uniqueId = `chat-alert-${Date.now()}`;
+        chatContent.insertAdjacentHTML('beforeend',
+            `<div id='${uniqueId}'' style="width:100%;height:25px;display:flex;justify-content:center;">
+                <p class="alert-success" style="text-align:center; border-radius:5px;width:70%">Connecting....</p><br>
+            </div>`
+        )
+
+        socket.onopen = () =>{
+            document.getElementById(uniqueId).style.display = 'none';
+            chatContent.insertAdjacentHTML(
+                'beforeend',
+                `<div id='chat-alert' style="width:100%;height:25px;display:flex;justify-content:center;">
+                    <p class="alert-success" style="text-align:center; border-radius:5px;width:70%">Connected Successfully</p><br>
+                </div>`
+            );
+            setTimeout(() => {
+                const chatAlert = document.getElementById('chat-alert');
+                if (chatAlert) {
+                    chatAlert.style.display = 'none';
+                }
+            }, 4000);
+            chatContent.scrollTop = chatContent.scrollHeight;
+           
+        }
+        
 
         socket.onmessage = (e)=>{
+
             data = JSON.parse(e.data);
             console.log(`Message received:`,data);
-            const chatContent = document.getElementById('chatContent');
             if(data.type=='chat'){
                 let divClass = 'received';
                 if(data.sender == "{{ request.user.username }}"){
@@ -128,26 +154,12 @@
                     // To auto scroll when new div is added!!
                     chatContent.scrollTop = chatContent.scrollHeight;
             }
-            if(data.type == 'connection' ){
-                if(data.message == 'connected'){
-                    chatContent.insertAdjacentHTML(
-                        'beforeend',
-                        `<div id='chat-alert' style="width:100%;height:25px;display:flex;justify-content:center;">
-                            <p class="alert-success" style="text-align:center; border-radius:5px;width:70%">Connected Successfully</p><br>
-                        </div>`
-                    );
-                    chatContent.scrollTop = chatContent.scrollHeight;
-                };
-                
-                setTimeout(()=>{
-                    document.getElementById('chat-alert').style.display = 'none';
-                },2000);
-
-            }
         }
         socket.onclose = (event) =>{
             console.log('message',event);
             const chatContent = document.getElementById('chatContent');
+            document.getElementById('chat-alert').style.display = 'none';
+            
             chatContent.insertAdjacentHTML(
                 'beforeend',
                 `<div id='chat-alert' style="width:100%;display:flex;justify-content:center;align-items:center;">
@@ -155,10 +167,6 @@
                 </div>`
             );
             chatContent.scrollTop = chatContent.scrollHeight;
-
-            // setTimeout(()=>{
-            //         document.getElementById('chat-alert').style.display = 'none';
-            //     },4000);
         }
 
         chatForm.addEventListener('submit', (e) => {
