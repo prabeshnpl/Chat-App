@@ -824,10 +824,26 @@ label{
         color: var(--text-color);
         transition: background-color var(--transition-speed), transform var(--transition-speed);
         cursor: pointer;
-        width: 40px;
-        height: 40px;
+        width: 20px;
+        height: 20px;
         display: flex;
         justify-content: center;
         align-items: center;
+    }
+    .emoji, .attach-file, .voice-message, .send-icon {
+        font-size: 14px;
+        border-radius: 50%;
+        background-color: var(--card-bg);
+        color: var(--text-color);
+        cursor: pointer;
+        transition: opacity 1s ease-in-out;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .send-icon{
+        display: none;
     }
 }

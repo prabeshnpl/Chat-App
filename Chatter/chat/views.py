@@ -47,7 +47,7 @@ def chat(request):
                         'receiver_first_name': message.receiver.first_name,
                         'receiver_last_name': message.receiver.last_name,
                         'message': message.message,
-                        'timestamp': message.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+                        'timestamp': message.timestamp.strftime('%H:%M'),
                     }
                     for message in page
                 ]
@@ -120,7 +120,7 @@ def chat(request):
 
                 if message:
                     Message.objects.filter(Q(sender=request.user, receiver=user) | Q(sender=user, receiver=request.user)).delete()
-                    messages.success(request,message)
+                    messages.success(request,'User Removed')
 
             except Exception as e:
                 if str(e) == 'No CustomUser matches the given query.':

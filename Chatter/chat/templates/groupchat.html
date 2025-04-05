@@ -1,5 +1,5 @@
 {% extends 'basechat.html' %}
-
+{% load static %}
 <!-- Display friend or group -->
 {% block friendorgroup %}
     <!-- Display all groups -->
@@ -16,7 +16,12 @@
         </div>
     </div>
     {% empty %}
-    <div>No Groups. Try adding some.</div>
+    <div class="no-friends-display">No groups. Try adding some.</div>
+    <div class="blank-content-for-mobile">
+        <i class="bi bi-chat-text"></i>
+        <h3>No Groups Yet</h3><br>
+        <img src="{% static 'images/Messages-pana.png' %}" alt="Error" height="200" width="200">
+    </div>
     {% endfor %}
 {% endblock %}
 
@@ -55,13 +60,15 @@
     <form class="chat-bottom-message-bar" method="post" id="chatForm">
         {% csrf_token %}
         <!-- Attachment buttons -->
-        <div class="attach-file flex"><i class="bi bi-paperclip"></i></div>
-        <div class="emoji flex"><i class="bi bi-emoji-smile"></i></div>
+        <div class="emoji flex"><i class="bi bi-emoji-smile" id="emoji-input"></i></div>
 
-        <input class="text-message" placeholder="Type a message" name="message" required>
+        <input class="text-message" placeholder="Type a message" name="message" id="text-message" required>
 
-        <button class="send-icon flex" type="submit"><i class="bi bi-send-fill"></i></button>
-        <div class="voice-message flex"><i class="bi bi-mic-fill"></i></div>
+        <div class="attach-file flex" id="attach-file"><i class="bi bi-paperclip"></i></div>
+
+        <button class="send-icon flex" id="send-icon" type="submit"><i class="bi bi-send-fill"></i></button>
+
+        <div class="voice-message flex" id="voice-message"><i class="bi bi-mic-fill"></i></div>
     </form>
 </div>
 
@@ -74,7 +81,7 @@
         if(room_code){
             console.log(room_code);
 
-            let socket = new WebSocket(`wss://${window.location.host}/ws/groupchat/${room_code}/`);
+            let socket = new WebSocket(`ws://${window.location.host}/ws/groupchat/${room_code}/`);
 
             socket.onmessage = (e)=>{
                 data = JSON.parse(e.data);
@@ -109,11 +116,57 @@
                     // To auto scroll when new div is added!!
                     chatContent.scrollTop = chatContent.scrollHeight;
                 }
+                if(data.type == 'connection' ){
+                if(data.message == 'connected'){
+                    chatContent.insertAdjacentHTML('beforeend',
+                        `<div id='chat-alert' style="width:100%;height:25px;display:flex;justify-content:center;">
+                            <p class="alert-success" style="text-align:center; border-radius:5px;width:70%">Connected Successfully</p><br>
+                        </div>`                       
+                    );
+                    chatContent.scrollTop = chatContent.scrollHeight;
+
+                };
+                setTimeout(()=>{
+                    document.getElementById('chat-alert').style.display = 'none';
+                },2000)
+
+            }
+            }
+
+            socket.onclose = (event) =>{
+                console.log('message',event);
+                const chatContent = document.getElementById('chatContent');
+                chatContent.insertAdjacentHTML(
+                    'beforeend',
+                    `<div id='chat-alert' style="width:100%;display:flex;justify-content:center;align-items:center;">
+                        <p class='alert-error' style="text-align:center; border-radius:5px;width:70%">Disconnected. Please check your internet connection and try again.</p><br>
+                    </div>`
+                );
+                chatContent.scrollTop = chatContent.scrollHeight;
+
             }
 
             document.getElementById('chatForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const message = e.target.message.value;
+
+            voiceMessage= document.getElementById('voice-message');
+            attachFile = document.getElementById('attach-file');
+            document.getElementById('send-icon').style.display = 'none';
+            voiceMessage.style.display = 'flex';
+            attachFile.style.display = 'flex';
+
+            setTimeout(() => {
+                voiceMessage.style.opacity = '0'; // Start with opacity 0
+                attachFile.style.opacity = '0'; // Start with opacity 0
+
+                setTimeout(() => {
+                    voiceMessage.style.opacity = '1'; // Fade in
+                    attachFile.style.opacity = '1'; // Fade in
+                }, 10);
+            }, 0); // Match the transition duration
+
+
             socket.send(JSON.stringify({message:message,receiverId:id}));     
             e.target.reset();               
             });

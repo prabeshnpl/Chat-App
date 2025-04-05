@@ -13,12 +13,13 @@ class Chat(AsyncWebsocketConsumer):
         # Add the user to the room group
         await self.channel_layer.group_add(self.room_name, self.channel_name)
         await self.accept()
-        await self.send(json.dumps({'type': 'connection', 'message': 'Successfully connected'}))
+        await self.send(json.dumps({'type': 'connection', 'message': 'connected'}))
 
     async def disconnect(self, code):
         # Remove the user from the room group
         await self.channel_layer.group_discard(self.room_name, self.channel_name)
-        await self.send(json.dumps({'type': 'connection', 'message': 'Successfully disconnected'}))
+        await self.send(json.dumps({'type': 'connection', 'message': 'disconnected'}))
+        
 
     async def receive(self, text_data=None, bytes_data=None):
         # Parse the incoming WebSocket message
@@ -81,7 +82,7 @@ class GroupChat(AsyncWebsocketConsumer):
 
     async def disconnect(self, code):
         await self.channel_layer.group_discard(self.room_name,self.channel_name)
-        await self.send(json.dumps({'type': 'connection', 'message': 'Successfully disconnected'}))
+        await self.send(json.dumps({'type': 'connection', 'message': 'disconnected'}))
 
     async def receive(self, text_data=None, bytes_data=None):
         data = json.loads(text_data)

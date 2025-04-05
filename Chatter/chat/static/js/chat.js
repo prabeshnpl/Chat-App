@@ -7,14 +7,61 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatContent = document.querySelector('.chat-content');
     let page=1;
     let loading=false;
-    const chatType = document.getElementById('chatType').dataset.chatType 
 
+    
+    const chatType = document.getElementById('chatType').dataset.chatType 
     const messages = document.getElementById('messages')
     if(messages){
         setTimeout(() => {
             messages.style.display = 'none'; // Hide the messages after 3-4 seconds
         }, 2000);
     }
+
+    const texting = document.getElementById('text-message');
+    const voiceMessage = document.getElementById('voice-message');
+    const attachFile = document.getElementById('attach-file');
+    const sendIcon = document.getElementById('send-icon');
+    if(texting){
+        texting.addEventListener('input', () => {    
+
+            // Hide voice message and attach file with fade-out effect
+            voiceMessage.style.opacity = '0';
+            attachFile.style.opacity = '0';
+    
+            setTimeout(() => {
+                voiceMessage.style.display = 'none';
+                attachFile.style.display = 'none';
+    
+                // Show send icon with fade-in effect
+                sendIcon.style.display = 'flex';
+                sendIcon.style.opacity = '0'; // Start with opacity 0
+                setTimeout(() => {
+                    sendIcon.style.opacity = '1'; // Fade in
+                }, 10);
+            }, 300); // Match the transition duration
+        });
+    
+        texting.addEventListener('blur', () => {
+            if (texting.value.trim() === '') {
+                // Show voice message and attach file with fade-in effect
+                sendIcon.style.opacity = '0';
+                voiceMessage.style.display = 'flex';
+                attachFile.style.display = 'flex';
+                
+                setTimeout(() => {
+                    sendIcon.style.display = 'none';
+                    voiceMessage.style.opacity = '0'; // Start with opacity 0
+                    attachFile.style.opacity = '0'; // Start with opacity 0
+    
+                    setTimeout(() => {
+                        voiceMessage.style.opacity = '1'; // Fade in
+                        attachFile.style.opacity = '1'; // Fade in
+                    }, 10);
+                }, 0); // Match the transition duration
+            }
+        });
+    }
+    
 
     const loadMessages = () => {
         if(loading) return;
