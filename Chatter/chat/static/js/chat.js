@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             'afterbegin',
                             `
                             <div class="message ${type}">
-                                ${userDetailDiv}<br>
+                                ${userDetailDiv}
                                 ${chat.message}
                                 <div class="message-time-wrapper">
                                     <span class="message-time">${chat.timestamp}</span>

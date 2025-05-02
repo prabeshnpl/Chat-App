@@ -158,7 +158,7 @@
             socket.onclose = (event) =>{
                 console.log('message',event);
                 const chatContent = document.getElementById('chatContent');
-                document.getElementById('chat-alert').style.display = 'none';
+                document.getElementById(uniqueId).style.display = 'none';
                 
                 chatContent.insertAdjacentHTML(
                     'beforeend',

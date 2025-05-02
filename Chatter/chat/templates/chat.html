@@ -43,10 +43,7 @@
             </div>
         </div>
         <div class="chat-top-bar-right">
-            <div class="video-call flex"><i class="bi bi-camera-video-fill"></i></div>
-            <div class="call flex"><i class="bi bi-telephone-fill"></i></div>
-            <div class="search flex"><i class="bi bi-search"></i></div>
-            <div class="more-options flex""><i class="bi bi-three-dots-vertical"></i></div>
+            <div class="more-options flex"><i class="bi bi-three-dots-vertical"></i></div>
         </div>
     </div>
     <!-- Display warning message if the user isn't your friend. -->
@@ -95,10 +92,11 @@
     
     if (room_code) {
         console.log(room_code)
-        let socket = new WebSocket(`wss://${window.location.host}/ws/chat/${room_code}/`);
+        let socket = new WebSocket(`ws://${window.location.host}/ws/chat/${room_code}/`);
         const uniqueId = `chat-alert-${Date.now()}`;
+
         chatContent.insertAdjacentHTML('beforeend',
-            `<div id='${uniqueId}'' style="width:100%;height:25px;display:flex;justify-content:center;">
+            `<div id='${uniqueId}' style="width:100%;height:25px;display:flex;justify-content:center;">
                 <p class="alert-success" style="text-align:center; border-radius:5px;width:70%">Connecting....</p><br>
             </div>`
         )
@@ -158,8 +156,8 @@
         socket.onclose = (event) =>{
             console.log('message',event);
             const chatContent = document.getElementById('chatContent');
-            document.getElementById('chat-alert').style.display = 'none';
-            
+            // document.getElementById('chat-alert').style.display = 'none';
+            document.getElementById(uniqueId).style.display = 'none';
             chatContent.insertAdjacentHTML(
                 'beforeend',
                 `<div id='chat-alert' style="width:100%;display:flex;justify-content:center;align-items:center;">
