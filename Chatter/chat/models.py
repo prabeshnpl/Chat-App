@@ -39,8 +39,9 @@ class Group(models.Model):
 class GroupMessage(models.Model):
     group = models.ForeignKey(Group,on_delete=models.CASCADE)
     sender = models.ForeignKey(CustomUser, related_name='group_messages', on_delete=models.SET_NULL, null=True)
-    message = models.TextField()
+    message = models.TextField(null=True,blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
+    voice_message = models.FileField(upload_to='voice_messages/', null=True, blank=True)
 
     def __str__(self):
         return f"{self.sender} sends {self.message}"

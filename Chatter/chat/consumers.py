@@ -125,25 +125,51 @@ class GroupChat(AsyncWebsocketConsumer):
         data = json.loads(text_data)
         sender = self.scope['user']
         message = data['message']
+        vmessage = data['vmessage']
         groupId = data['receiverId']
 
         if sender.is_authenticated:
             try:
-                
+                if message:
                 # Save the message
-                await self.save_message(groupId, sender, message)
+                    await self.save_message(groupId, sender, message)
 
-                # Broadcast the message to the room group
-                await self.channel_layer.group_send(
-                    self.room_name,
-                    {
-                        'type': 'send_chat',
-                        'message': message,
-                        'sender_username': sender.username,
-                        'sender_first_name': sender.first_name,
-                        'sender_last_name': sender.last_name,
-                    }
-                )
+                    # Broadcast the message to the room group
+                    await self.channel_layer.group_send(
+                        self.room_name,
+                        {
+                            'type': 'send_chat',
+                            'message': message,
+                            'sender_username': sender.username,
+                            'sender_first_name': sender.first_name,
+                            'sender_last_name': sender.last_name,
+                            'vmessage':'',
+                        }
+                    )
+                
+                if vmessage :
+                    audio_data = base64.b64decode(vmessage)
+                    import uuid
+                    file_name = f"vmessage_{uuid.uuid4().hex}.webm"
+
+                    from django.core.files.base import ContentFile
+                    voice_message_file = ContentFile(audio_data, name=file_name)
+
+                    await self.save_vmessage(groupId, sender, voice_message_file)
+                   
+                    audio_url = f"/media/voice_messages/{file_name}"
+
+                    await self.channel_layer.group_send(
+                        self.room_name,
+                        {
+                            "type": "send_vchat",
+                            'message':'',
+                            "vmessage": audio_url,
+                            "sender_username": sender.username,
+                            'sender_first_name': sender.first_name,
+                            'sender_last_name': sender.last_name,
+                        },
+                    )
             except FriendShip.DoesNotExist:
                 await self.send(json.dumps({'error': 'Invalid room code'}))
         else:
@@ -155,7 +181,17 @@ class GroupChat(AsyncWebsocketConsumer):
         sender_username = event['sender_username']
         sender_first_name = event['sender_first_name']
         sender_last_name = event['sender_last_name']
-        await self.send(json.dumps({'type':'groupchat','message': message,'username':sender_username ,'sender_first_name': sender_first_name, 'sender_last_name':sender_last_name}))
+        vmessage = event['vmessage']
+        await self.send(json.dumps({'type':'groupchat','message': message,'vmessage':vmessage,'username':sender_username ,'sender_first_name': sender_first_name, 'sender_last_name':sender_last_name}))
+    
+    async def send_vchat(self, event):
+        # Send the message to WebSocket clients
+        message = event['message']
+        sender_username = event['sender_username']
+        sender_first_name = event['sender_first_name']
+        sender_last_name = event['sender_last_name']
+        vmessage = event['vmessage']
+        await self.send(json.dumps({'type':'voiceMessage','message': message,'vmessage':vmessage,'username':sender_username ,'sender_first_name': sender_first_name, 'sender_last_name':sender_last_name}))
     
     async def user_joined(self, event):
         # Notify all users in the group about the new user
@@ -168,6 +204,6 @@ class GroupChat(AsyncWebsocketConsumer):
         return GroupMessage.objects.create(sender=sender, group=Group.objects.get(id=groupId), message=message)
 
     @database_sync_to_async
-    def save_vmessage(self, sender, receiver, vmessage):
+    def save_vmessage(self, groupId, sender, vmessage):
         # Save the message to the database
-        return Message.objects.create(sender=sender, receiver=receiver, voice_message=vmessage)
+        return GroupMessage.objects.create(sender=sender, group=Group.objects.get(id=groupId), voice_message=vmessage)

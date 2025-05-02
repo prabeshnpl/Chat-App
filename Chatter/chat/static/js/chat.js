@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         let type = username == chat.sender ? "sent":"received";
                         
                         if(chatType == 'group_chat'){
-                            userDetailDiv = `<div>${chat.sender_first_name} ${ chat.sender_last_name}</div>`
+                            userDetailDiv = `<div><strong>${chat.sender_first_name.toUpperCase()} ${chat.sender_last_name.toUpperCase()}</strong></div>`
                         }
 
                         if(chat.message){
@@ -112,6 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             'afterbegin',
                             `
                             <div class="message ${type}">
+                                ${userDetailDiv}
                                 <audio controls>
                                     <source src="${chat.voiceMessage}" type="audio/webm">
                                     Your browser does not support the audio element.

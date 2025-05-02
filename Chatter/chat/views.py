@@ -229,10 +229,14 @@ def group_chat(request):
                     'sender_first_name': message.sender.first_name,
                     'sender_last_name': message.sender.last_name,
                     'message': message.message,
+                    'voiceMessage':message.voice_message.url if message.voice_message and message.voice_message.name else None,
                     'timestamp': message.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
                 }
                 for message in page
                 ]
+                for message in page:
+                    print(message.voice_message if message.voice_message and message.voice_message.name else 'Booooow'),
+
                 return JsonResponse({
                     'messages': message_data,
                     'has_next': page.has_next(),
