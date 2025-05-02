@@ -309,7 +309,7 @@ def group_chat(request):
                         this_friend.room_code = this_room_code
                         this_friend.save()
                     else:
-                        FriendShip.objects.create(user=request.user,friend=user,room_code = room_code)
+                        FriendShip.objects.create(user=request.user,friend=user,room_code = this_room_code)
                     messages.success(request,'Request sent successfully')
 
             except Exception as e:

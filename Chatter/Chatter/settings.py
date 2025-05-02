@@ -55,8 +55,8 @@ CHANNEL_LAYERS = {
         # Use Redis for production
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            # "hosts": [REDIS_URL],
-            "hosts": [("127.0.0.1", 6379)],  # Redis running locally
+            "hosts": [REDIS_URL],
+            # "hosts": [("127.0.0.1", 6379)],  # Redis running locally
 
         },
     },

@@ -11,7 +11,7 @@ let userInput = document.getElementById('user');
 const user = userInput ? userInput.dataset.user : null;
 if (room_code) {
     console.log(room_code)
-    let socket = new WebSocket(`ws://${window.location.host}/ws/chat/${room_code}/`);
+    let socket = new WebSocket(`wss://${window.location.host}/ws/chat/${room_code}/`);
     const uniqueId = `chat-alert-${Date.now()}`;
 
     chatContent.insertAdjacentHTML('beforeend',
