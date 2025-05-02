@@ -3,24 +3,12 @@ from .forms import RegisterForm , LoginForm
 from django.contrib.auth import authenticate, login ,logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q,F
 from .models import CustomUser, Message, FriendShip, Group, GroupMessage
 from django.core.paginator import Paginator
 from django.http import JsonResponse , HttpResponseForbidden
 import uuid
 # Create your views here.
-
-@csrf_exempt
-def upload_voice_message(request):
-    if request.method == 'POST' and request.FILES.get('voice_message'):
-        voice_message = request.FILES['voice_message']
-        # Save the file or process it as needed
-        with open(f'media/voice_messages/{voice_message.name}', 'wb') as f:
-            for chunk in voice_message.chunks():
-                f.write(chunk)
-        return JsonResponse({'message': 'Voice message uploaded successfully!'})
-    return JsonResponse({'error': 'Invalid request'}, status=400)
 
 
 @login_required()
@@ -61,10 +49,14 @@ def chat(request):
                         'receiver_first_name': message.receiver.first_name,
                         'receiver_last_name': message.receiver.last_name,
                         'message': message.message,
+                        'voiceMessage':message.voice_message.url if message.voice_message and message.voice_message.name else None,
                         'timestamp': message.timestamp.strftime('%H:%M'),
                     }
                     for message in page
                 ]
+                for message in page:
+                    print(message.voice_message.url if message.voice_message else 'xaina'),
+
                 return JsonResponse({
                     'messages': message_data,
                     'has_next': page.has_next(),

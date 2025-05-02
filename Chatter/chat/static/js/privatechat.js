@@ -49,7 +49,6 @@ if (room_code) {
             if(data.sender == `${user}`){
                 divClass ='sent';
             };
-            console.log(divClass);
             
             chatContent.insertAdjacentHTML(
             'beforeend',
@@ -58,6 +57,21 @@ if (room_code) {
             <div class="message-time-wrapper">
                 <span class="message-time">now</span>
             </div>
+            </div>`
+            );
+            // To auto scroll when new div is added!!
+            chatContent.scrollTop = chatContent.scrollHeight;
+        }
+        if(data.type=='vmessage'){
+            let divClass = data.sender == user ? 'sent':'received';
+            console.log('received vmess')
+            chatContent.insertAdjacentHTML(
+            'beforeend',
+            `<div class="message ${divClass}">
+                <audio controls>
+                    <source src="${data.vmessage}" type="audio/webm">
+                    Your browser does not support the audio element.
+                </audio>
             </div>`
             );
             // To auto scroll when new div is added!!
@@ -75,7 +89,7 @@ if (room_code) {
         }
     }
     socket.onclose = (event) =>{
-        console.log('message',event);
+        console.log('Socket Closed:',event);
         const chatContent = document.getElementById('chatContent');
         // document.getElementById('chat-alert').style.display = 'none';
         document.getElementById(uniqueId).style.display = 'none';
@@ -108,9 +122,74 @@ if (room_code) {
     }, 0); // Match the transition duration
 
     const message = e.target.message.value;
-    socket.send(JSON.stringify({message:message,receiverId:id}));     
+    socket.send(JSON.stringify({message:message,receiverId:id,vmessage:''}));     
     e.target.reset();               
     });
+
+
+    // For voice message
+    const voiceMessageButton = document.getElementById('voice-message');
+    let mediaRecorder;
+    let audioChunks = [];
+
+    // Check if the browser supports audio recording
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        voiceMessageButton.addEventListener('click', async () => {
+            if (!mediaRecorder || mediaRecorder.state === 'inactive') {
+                // Request microphone access
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+
+                // Start recording
+                mediaRecorder.start();
+                audioChunks = [];
+                voiceMessageButton.innerHTML = '<i class="bi bi-stop-fill"></i>'; // Change icon to "stop"
+
+                // Collect audio data
+                mediaRecorder.ondataavailable = (event) => {
+                    audioChunks.push(event.data);
+                };
+
+                // Stop recording after 10 seconds (optional)
+                setTimeout(() => {
+                    if (mediaRecorder.state === 'recording') {
+                        mediaRecorder.stop();
+                    }
+                }, 10000);
+
+                // Handle recording stop
+                mediaRecorder.onstop = async () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    const reader = new FileReader();
+
+                    reader.onload = () =>{
+                        const base64Audio = reader.result.split(',')[1];
+                        console.log('Before sending...');
+                        socket.send(JSON.stringify({
+                            vmessage: base64Audio,
+                            receiverId: id,
+                            message: ''
+                        }));
+                        console.log('After sending...');
+                    }
+                    reader.readAsDataURL(audioBlob);
+                   
+                    // Reset button icon
+                    voiceMessageButton.innerHTML = '<i class="bi bi-mic-fill"></i>';
+                    alert('Voice message sent!');
+
+                };
+            } else if (mediaRecorder.state === 'recording') {
+                // Stop recording when the button is clicked again
+                mediaRecorder.stop();
+            }
+        });
+    } else {
+        alert('Your browser does not support audio recording.');
+    }
+
+
+
 }
 }
 

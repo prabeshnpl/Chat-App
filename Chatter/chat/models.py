@@ -61,4 +61,4 @@ class Message(models.Model):
         ordering = ['timestamp']
 
     def __str__(self):
-        return f"From {self.sender} to {self.receiver}: {self.message[:50]}"
+        return f"From {self.sender} to {self.receiver}"

@@ -85,18 +85,15 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(data => {
                 if(data.messages){
                     data.messages.forEach(chat => {
-                        let type = '';
+                        
                         username = document.getElementById('user').dataset.user;
-                        if(username == chat.sender ){
-                            type = "sent";
-                        }
-                        else{
-                            type = "received";
-                        }
+                        let type = username == chat.sender ? "sent":"received";
+                        
                         if(chatType == 'group_chat'){
                             userDetailDiv = `<div>${chat.sender_first_name} ${ chat.sender_last_name}</div>`
                         }
 
+                        if(chat.message){
                         chatContent.insertAdjacentHTML(
                             'afterbegin',
                             `
@@ -108,7 +105,22 @@ document.addEventListener('DOMContentLoaded', () => {
                                 </div>
                             </div>
                             `
+                        );}
+
+                        else {
+                        chatContent.insertAdjacentHTML(
+                            'afterbegin',
+                            `
+                            <div class="message ${type}">
+                                <audio controls>
+                                    <source src="${chat.voiceMessage}" type="audio/webm">
+                                    Your browser does not support the audio element.
+                                </audio>
+                            </div>
+                            `
                         );
+
+                        }
                     });
                     chatContent.scrollTop = chatContent.scrollHeight;
                     if (!data.has_next) {

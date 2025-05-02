@@ -8,7 +8,7 @@ const room_code = roomIdElement ? roomIdElement.dataset.roomCode : null;
 if(room_code){
     console.log(room_code);
 
-    let socket = new WebSocket(`wss://${window.location.host}/ws/groupchat/${room_code}/`);
+    let socket = new WebSocket(`ws://${window.location.host}/ws/groupchat/${room_code}/`);
     const uniqueId = `chat-alert-${Date.now()}`;
     chatContent.insertAdjacentHTML('beforeend',
         `<div id='${uniqueId}'' style="width:100%;height:25px;display:flex;justify-content:center;">
@@ -24,6 +24,13 @@ if(room_code){
                 <p class="alert-success" style="text-align:center; border-radius:5px;width:70%">Connected Successfully</p><br>
             </div>`
         );
+        setTimeout(() => {
+            const chatAlert = document.getElementById('chat-alert');
+            if (chatAlert) {
+                chatAlert.style.display = 'none';
+            }
+        }, 4000);
+        
         chatContent.scrollTop = chatContent.scrollHeight;
 
         setTimeout(()=>{
