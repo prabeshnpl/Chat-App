@@ -3,6 +3,7 @@
     /* --primary-bg: #c7d4f7; */
     --secondary-bg: #ffffff;
     --accent-color: #58aee7;
+    --accent-color2: linear-gradient(to bottom, #efdbf7,  #7004f5);
     --hover-color: #2ecc71;
     --text-color: #000000;
     --text-secondary: #bdc3c7;
@@ -309,11 +310,12 @@ label{
     left: -250px;
     width: 250px;
     height: 100%;
-    background: var(--accent-color);
+    background: var(--accent-color2);
     box-shadow: 2px 0 5px rgba(0,0,0,0.1);
     transition: left 0.3s ease;
     z-index: 1000;
     overflow-y: auto;
+    color: #000000;
 }
 .toggle-nav.active {
     left: 0;
@@ -330,6 +332,11 @@ label{
 .toggle-nav ul li {
     padding: 15px;
     border-bottom: 1px solid #eee;
+    transition: background-color var(--transition-speed);
+}
+
+.toggle-nav ul li:hover {
+    background-color: var(--hover-color);
 }
 .toggle-nav ul li a {
     text-decoration: none;
@@ -384,6 +391,7 @@ label{
 }
 .addFriendBtn,li{
     cursor: pointer;
+    color: white;
 }
 .close-popup{
     cursor: pointer;
@@ -579,17 +587,25 @@ label{
 /* Message bubbles */
 .message {
     height: auto;
-    min-height: 40px;
-    padding: 2px 12px;
-    border-radius: 10px; 
-    margin-bottom: 4px; 
+    padding: 8px 12px;
+    border-radius: 10px;
+    margin-bottom: 4px;
     background-color: var(--card-bg);
-    max-width: calc(100% - 20px); 
-    width: auto; 
-    position: relative;
+    max-width: 70%;
+    width: fit-content;
     word-wrap: break-word;
-    display: inline-block;
     overflow-wrap: break-word;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.message-time-wrapper {
+    align-self: flex-end;
+    font-size: 10px;
+    color: white;
+    margin-top: 5px;
+    white-space: nowrap;
 }
 
 .message.received {
@@ -605,13 +621,6 @@ label{
     border-bottom-right-radius: 5px;
 }
 
-.message-time-wrapper {
-    align-self: flex-end;
-    font-size: 10px;
-    color: white;
-    margin-top: 3px;
-    /* display: block; */
-}
 
 /* Bottom message bar */
 .chat-bottom-message-bar {
@@ -674,6 +683,25 @@ label{
 }
 .mobile-action{
     margin-right: 10px;
+}
+
+
+/* Style for voice message */
+.voice-message {
+    background-color: var(--accent-color);
+    color: white;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.voice-message:hover {
+    background-color: var(--hover-color);
 }
 
 /* Added larger breakpoint for even better scaling on big screens */

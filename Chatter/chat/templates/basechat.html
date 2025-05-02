@@ -45,7 +45,8 @@
         <div class="select-user-bar" id="select-user-bar">
             <div class="nav">
                 <div><i class="bi bi-list"></i></div>
-                <div style="margin-left: 20px;">CHAT</div>
+                <div style="margin-left: 20px;margin-right: 20px;">CHAT</div>
+                <p>(username: {{ request.user }})</p>
             </div>
             
             <!-- Search box -->
@@ -170,8 +171,6 @@
     <div class="popup-overlay" id="popupOverlay"></div>  
 
     <script src="{% static 'js/chat.js' %}"></script>
-
-
 
 </body>
 </html>

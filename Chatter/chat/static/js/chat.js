@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatContent = document.querySelector('.chat-content');
     let page=1;
     let loading=false;
-
     
     const chatType = document.getElementById('chatType').dataset.chatType 
     const messages = document.getElementById('messages')
@@ -62,8 +61,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-
+    
     const loadMessages = () => {
+        
         if(loading) return;
         loading = true;
         const baseUrl = window.location.origin;
@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
         else if(chatType == 'group_chat'){
             fetchUrl = `${baseUrl}/group/?id=${receiverId}&page=${page}`;
         }
-        if(receiverId){
+        if(receiverId){            
             fetch(fetchUrl,{
                 headers:{
                     'X-Requested-With':'XMLHttpRequest',
