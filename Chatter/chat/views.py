@@ -54,8 +54,6 @@ def chat(request):
                     }
                     for message in page
                 ]
-                for message in page:
-                    print(message.voice_message.url if message.voice_message else 'xaina'),
 
                 return JsonResponse({
                     'messages': message_data,

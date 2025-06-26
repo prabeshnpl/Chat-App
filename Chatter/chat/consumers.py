@@ -19,8 +19,7 @@ class Chat(AsyncWebsocketConsumer):
     async def disconnect(self, code):
         # Remove the user from the room group
         await self.channel_layer.group_discard(self.room_name, self.channel_name)
-        await self.send(json.dumps({'type': 'connection', 'message': 'disconnected'}))
-        
+        await self.send(json.dumps({'type': 'connection', 'message': 'disconnected'}))       
 
     async def receive(self, text_data=None, bytes_data=None):
         # Parse the incoming WebSocket message
@@ -207,3 +206,16 @@ class GroupChat(AsyncWebsocketConsumer):
     def save_vmessage(self, groupId, sender, vmessage):
         # Save the message to the database
         return GroupMessage.objects.create(sender=sender, group=Group.objects.get(id=groupId), voice_message=vmessage)
+    
+class VoiceChat(AsyncWebsocketConsumer):
+    async def connect(self):
+        self.room_code = self.scope['url_route']['kwargs']['room_code']
+        self.room_name = f'room_{self.room_code}'
+
+        await self.channel_layer.group_add(self.room_name, self.channel_name)
+        await self.accept()
+        await self.send(json.dumps({'type': 'connection', 'message': 'connected'}))
+
+    async def disconnect(self, code):
+        await self.channel_layer.group_discard(self.room_name, self.channel_name)
+        await self.send(json.dumps({'type': 'connection', 'message': 'disconnected'}))

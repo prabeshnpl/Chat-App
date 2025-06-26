@@ -43,6 +43,8 @@
             </div>
         </div>
         <div class="chat-top-bar-right">
+            <div class="call flex" title="Start Call" onclick="startCall()"><i class="bi bi-telephone-fill"></i></div>
+            <audio id="remoteAudio" autoplay></audio>
             <div class="more-options flex"><i class="bi bi-three-dots-vertical"></i></div>
         </div>
     </div>
@@ -78,8 +80,24 @@
         <div class="voice-message flex" id="voice-message"><i class="bi bi-mic-fill"></i></div>
     </form>
 </div>
+
 {% endif %}
 
+<!-- call_ui.html -->
+<div id="overlay2" class="hidden"></div>
+
+<div id="incomingCallBox" class="voice-call-popup hidden">
+  <p>📞 Incoming Call from <strong id="caller">User123</strong></p>
+  <button id="acceptBtn">✅ Accept</button>
+  <button id="rejectBtn">❌ Reject</button>
+</div>
+
+<div id="callBox" class="voice-call-popup hidden">
+    <p>
+        <h1>You are in a Voice call</h1>
+    </p>
+    <button id="endCallBtn">❌ End Call</button>
+</div>
 
 <script src="{% static 'js/privatechat.js' %}"></script>
 

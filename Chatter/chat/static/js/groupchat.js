@@ -68,7 +68,7 @@ if(room_code){
             'beforeend',
             `<div class="message ${divClass}">
             <div><strong>[ ${data.sender_first_name.toUpperCase()} ${data.sender_last_name.toUpperCase()}]</strong></div><br>
-                <audio controls>
+                <audio controls style="max-width:100%; width:100%;">
                     <source src="${data.vmessage}" type="audio/webm">
                     Your browser does not support the audio element.
                 </audio>
