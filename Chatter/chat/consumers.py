@@ -46,6 +46,7 @@ class Chat(AsyncWebsocketConsumer):
                             'sender': user.username
                         }
                     )                    
+                
                 elif message == 'call_ended':
                     await self.channel_layer.group_send(
                         self.room_name,

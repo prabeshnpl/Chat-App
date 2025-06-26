@@ -8,7 +8,7 @@ const room_code = roomIdElement ? roomIdElement.dataset.roomCode : null;
 if(room_code){
     console.log(room_code);
 
-    let socket = new WebSocket(`ws://${window.location.host}/ws/groupchat/${room_code}/`);
+    let socket = new WebSocket(`wss://${window.location.host}/ws/groupchat/${room_code}/`);
     const uniqueId = `chat-alert-${Date.now()}`;
     chatContent.insertAdjacentHTML('beforeend',
         `<div id='${uniqueId}'' style="width:100%;height:25px;display:flex;justify-content:center;">

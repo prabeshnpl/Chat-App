@@ -670,6 +670,11 @@ label{
     border-bottom-right-radius: 5px;
 }
 
+.responsive-audio {
+  width: 100%;
+  max-width: 100%;
+  display: block;
+}
 
 /* Bottom message bar */
 .chat-bottom-message-bar {

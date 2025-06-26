@@ -16,7 +16,7 @@ if(id){
         console.log(room_code)
 
         // creating web socket connection
-        let socket = new WebSocket(`ws://${window.location.host}/ws/chat/${room_code}/`);
+        let socket = new WebSocket(`wss://${window.location.host}/ws/chat/${room_code}/`);
 
         // Sucess message when connected
         const uniqueId = `chat-alert-${Date.now()}`;
@@ -74,7 +74,7 @@ if(id){
                 chatContent.insertAdjacentHTML(
                 'beforeend',
                 `<div class="message ${divClass}">
-                    <audio controls style="max-width:100%; width:100%;">
+                    <audio controls class="responsive-audio">
                         <source src="${data.vmessage}" type="audio/webm">
                         Your browser does not support the audio element.
                     </audio>
@@ -110,7 +110,7 @@ if(id){
 
                 acceptBtn.onclick = () => {
                     popup.classList.add("hidden");
-                    overlay.classList.add("hidden");
+                    document.getElementById("callBox").classList.remove("hidden");
                     handleOffer(data.vcall);                    
                 };
 
@@ -192,6 +192,7 @@ if(id){
                 document.getElementById('ringingBox').classList.add('hidden');
                 document.getElementById('overlay2').classList.add('hidden');
                 document.getElementById('callBox').classList.add('hidden');
+                document.getElementById('incomingCallBox').classList.add('hidden');
 
                 alert(data.message || 'Call Ended');
             }
@@ -298,6 +299,8 @@ if(id){
             });
         } 
         else {
+            console.log(navigator.mediaDevices);
+            console.log(typeof navigator.mediaDevices.getUserMedia);
             alert('Your browser does not support audio recording.');
         }
 
@@ -359,7 +362,7 @@ if(id){
         }
 
         // End call function
-        function endCall() {
+        window.endCall = async function() {
             if (localConnection) {
                 localConnection.close();
                 localConnection = null;

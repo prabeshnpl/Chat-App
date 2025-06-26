@@ -23,9 +23,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-ejizh16%pl#3rbw_#6hus(8&+oevft$sh9%8(cri^oa9i*(8_c'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
+# DEBUG = True
 
-ALLOWED_HOSTS = ['https://chat-app-vtpp.onrender.com','chat-app-vtpp.onrender.com','192.168.1.65','127.0.0.1']
+ALLOWED_HOSTS = ['https://chat-app-vtpp.onrender.com','chat-app-vtpp.onrender.com']
+# ALLOWED_HOSTS = ['192.168.1.65', '127.0.0.1']
 CSRF_TRUSTED_ORIGINS = ['https://chat-app-vtpp.onrender.com']
 
 
@@ -55,8 +57,8 @@ CHANNEL_LAYERS = {
         # Use Redis for production
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            # "hosts": [REDIS_URL],
-            "hosts": [("127.0.0.1", 6379)],  # Redis running locally
+            "hosts": [REDIS_URL],
+            # "hosts": [("127.0.0.1", 6379)],  # Redis running locally
 
         },
     },
