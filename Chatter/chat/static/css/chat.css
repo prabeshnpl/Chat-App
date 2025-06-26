@@ -1,15 +1,15 @@
 :root {
-    --primary-bg: linear-gradient(to bottom, #58aee7, #9b59b6);
+    --primary-bg: linear-gradient(to bottom,  #dbf6ea, #88f9b9);
     /* --primary-bg: #c7d4f7; */
     --secondary-bg: #ffffff;
-    --accent-color: #58aee7;
-    --accent-color2: linear-gradient(to bottom, #efdbf7,  #7004f5);
+    --accent-color: #a7d6f6;
+    --accent-color2: linear-gradient(to bottom, #7c7e7d, #416f55);
     --hover-color: #2ecc71;
     --text-color: #000000;
     --text-secondary: #bdc3c7;
     --card-bg: rgba(255, 255, 255, 0.8);
     --input-bg: rgba(44, 62, 80, 0.7);
-    --page-bg: linear-gradient(135deg, #58aee7, #9b59b6);
+    --page-bg: linear-gradient(135deg, #d0eee1, #bafed7);
     --error-color: #e74c3c;
     --success-color: #2ecc71;
     --border-radius: 12px;
@@ -88,7 +88,7 @@ label{
 /* Sidebar styling */
 .select-user-bar {
     flex: 1;
-    max-width: 30%;
+    max-width: 25%;
     border-right: 1px solid rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;

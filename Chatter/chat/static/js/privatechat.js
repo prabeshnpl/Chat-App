@@ -11,9 +11,10 @@ let userInput = document.getElementById('user');
 const user = userInput ? userInput.dataset.user : null;
 if (room_code) {
     console.log(room_code)
-    let socket = new WebSocket(`wss://${window.location.host}/ws/chat/${room_code}/`);
+    console.log("Connecting!!")
+    let socket = new WebSocket(`ws://${window.location.host}/ws/chat/${room_code}/`);
     const uniqueId = `chat-alert-${Date.now()}`;
-
+    
     chatContent.insertAdjacentHTML('beforeend',
         `<div id='${uniqueId}' style="width:100%;height:25px;display:flex;justify-content:center;">
             <p class="alert-success" style="text-align:center; border-radius:5px;width:70%">Connecting....</p><br>
