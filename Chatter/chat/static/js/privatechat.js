@@ -50,7 +50,7 @@ if(id){
             
             data = JSON.parse(e.data);
             console.log(`Message received:`,data);
-            if(data.type=='chat'){
+            if(data.type == 'chat'){
                 let divClass = 'received';
 
                 if(data.sender == `${user}`){
@@ -69,7 +69,7 @@ if(id){
                 // To auto scroll when new div is added!!
                 chatContent.scrollTop = chatContent.scrollHeight;
             }
-            else if(data.type=='vmessage'){
+            else if(data.type == 'vmessage'){
                 let divClass = data.sender == user ? 'sent':'received';
                 chatContent.insertAdjacentHTML(
                 'beforeend',
@@ -93,32 +93,34 @@ if(id){
                     // To auto scroll when new div is added!!
                     chatContent.scrollTop = chatContent.scrollHeight;
             }
-            else if (data.offer) {
-
+            else if (data.type == 'offer') {
+                if(data.sender == user){
+                    console.log('Ignoring offer from self');
+                    return;
+                } // Ignore offers from the current user  
+                console.log('Incoming call offer received:', data);
                 const popup = document.getElementById("incomingCallBox");
                 const acceptBtn = document.getElementById("acceptBtn");
                 const rejectBtn = document.getElementById("rejectBtn");
                 const overlay = document.getElementById("overlay2");
 
-                popup.getElementById("caller").innerText = callerName;
+                document.getElementById("caller").innerText = id;
                 popup.classList.remove("hidden");
                 overlay.classList.remove("hidden");
 
                 acceptBtn.onclick = () => {
                     popup.classList.add("hidden");
-                    const popup = document.getElementById("callBox");
-                    popup.classList.remove("hidden");
-                    handleOffer(data.offer);
-                    // Optionally send an acceptance signal
-                    socket.send(JSON.stringify({ type: "call_accepted",message: "Call accepted" }));                    
+                    overlay.classList.add("hidden");
+                    handleOffer(data.vcall);                    
                 };
 
                 rejectBtn.onclick = () => {
                     popup.classList.add("hidden");
+                    overlay.classList.add("hidden");
                     endCall();
                     document.getElementById('remoteAudio').srcObject = null;
                     // Optionally send a rejection signal
-                    socket.send(JSON.stringify({ type: "call_ended", message: "Call rejected" }));
+                    socket.send(JSON.stringify({ type: "call_ended", message: "call_ended",receiverId:id, vmessage: '' }));
                 };
 
                 async function handleOffer(offer) {
@@ -132,7 +134,7 @@ if(id){
 
                     localConnection.onicecandidate = (event) => {
                         if (event.candidate) {
-                            socket.send(JSON.stringify({ candidate: event.candidate }));
+                            socket.send(JSON.stringify({type: "candidate", message: "candidate",receiverId:id, vmessage: '', vcall: event.candidate }));
                         }
                     };
 
@@ -140,29 +142,58 @@ if(id){
                     stream.getTracks().forEach(track => localConnection.addTrack(track, stream));
 
                     await localConnection.setRemoteDescription(offer);
+                    // Add queued candidates if any
+                    if (candidateQueue.length > 0) {
+                        for (const candidate of candidateQueue) {
+                            await localConnection.addIceCandidate(new RTCIceCandidate(candidate));
+                        }
+                        candidateQueue = [];
+                    }
                     const answer = await localConnection.createAnswer();
                     await localConnection.setLocalDescription(answer);
-                    socket.send(JSON.stringify({ answer: answer }));
+                    socket.send(JSON.stringify({ message:'answer', vmessage:'', vcall: answer, receiverId: id }));
                 }                
             }
-            else if (data.answer) {
-                await localConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+            else if (data.type == 'answer') {
+                if(data.sender == user){
+                    console.log('Ignoring offer from self');
+                    return;
+                } // Ignore offers from the current user 
+                await localConnection.setRemoteDescription(new RTCSessionDescription(data.vcall));
                 const popup = document.getElementById("callBox");
                 popup.classList.remove("hidden");
             }
-            else if (data.candidate) {
-                await localConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
+            else if (data.type == 'candidate') {
+                if(data.sender == user){
+                    console.log('Ignoring offer from self');
+                    return;
+                } // Ignore offers from the current user 
+                if (localConnection) {
+                    await localConnection.addIceCandidate(new RTCIceCandidate(data.vcall));
+                } 
+                else {
+                    // Optionally, queue the candidate and add it after connection is created
+                    candidateQueue.push(data.vcall);
+                }            
             }
-            else if (data.type === 'call_ended') {
+            else if (data.type == 'call_ended') {
+
+                // If rejected then on caller side
+                if (localConnection) {
+                    localConnection.close();
+                    localConnection = null;
+                }
+                if (localStream) {
+                    localStream.getTracks().forEach(track => track.stop());
+                    localStream = null;
+                }
+
                 document.getElementById('remoteAudio').srcObject = null;
-                alert(data.message || 'Call ended');
-                const popup = document.getElementById("incomingCallBox");
-                const overlay = document.getElementById("overlay2");
-                popup.classList.add("hidden");
-                overlay.classList.add("hidden");
-            }
-            else {
-                console.error('Unknown message type:', data);
+                document.getElementById('ringingBox').classList.add('hidden');
+                document.getElementById('overlay2').classList.add('hidden');
+                document.getElementById('callBox').classList.add('hidden');
+
+                alert(data.message || 'Call Ended');
             }
         }
 
@@ -272,8 +303,21 @@ if(id){
 
         let localConnection = null;
         let localStream = null;
+        let candidateQueue = [];
+
         // Function to start a call
-        async function startCall(){
+        window.startCall = async function(){
+
+            popup = document.getElementById("ringingBox");
+            overlay = document.getElementById("overlay2");
+            popup.classList.remove("hidden");
+            overlay.classList.remove("hidden");
+            cancelCallBtn = document.getElementById("cancelCallBtn");
+            cancelCallBtn.onclick = () => {
+                popup.classList.add("hidden");
+                overlay.classList.add("hidden");
+                endCall();
+            };
 
             // Create a new RTCPeerConnection
             let localConnection = new RTCPeerConnection({
@@ -293,14 +337,20 @@ if(id){
             // Handle Ice candidates
             localConnection.onicecandidate = (event) => {
                 if (event.candidate) {
-                    socket.send(JSON.stringify({ candidate: event.candidate }));
+                    socket.send(JSON.stringify({ message:'candidate' ,vcall: event.candidate, receiverId:id, vmessage:'' }));
                 }
             };
 
             // Send offer to the server
             const offer = await localConnection.createOffer();
             await localConnection.setLocalDescription(offer);
-            socket.send(JSON.stringify({ offer: offer, receiverId: id }));
+            if (candidateQueue.length > 0) {
+                for (const candidate of candidateQueue) {
+                    await localConnection.addIceCandidate(new RTCIceCandidate(candidate));
+                }
+                candidateQueue = [];
+            }
+            socket.send(JSON.stringify({ message:'offer', vmessage:'', vcall: offer, receiverId: id }));
             
             // Handle incoming tracks
             localConnection.ontrack = (event) => {
@@ -318,7 +368,7 @@ if(id){
                 localStream.getTracks().forEach(track => track.stop());
                 localStream = null;
             }
-            socket.send(JSON.stringify({ type: "call_ended" , message: "Call Ended"}));
+            socket.send(JSON.stringify({ type: "call_ended" , message: "call_ended" , vmessage: '' ,receiverId: id }));
         }
     }
 }

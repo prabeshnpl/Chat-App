@@ -33,9 +33,31 @@ class Chat(AsyncWebsocketConsumer):
         if user.is_authenticated:
             try:
                 # Fetch the friendship and save the message using async-safe ORM calls
-                friend = await self.get_friendship(receiverId)
+                friend = await self.get_friendship(receiverId)      
 
-                if message:
+                if message == 'candidate' or message == 'answer' or message == 'offer':
+                    vcall = data['vcall']
+                    await self.channel_layer.group_send(
+                        self.room_name,
+                        {
+                            'type': 'send_vcall',
+                            'vcall': vcall,
+                            'message': message,
+                            'sender': user.username
+                        }
+                    )                    
+                elif message == 'call_ended':
+                    await self.channel_layer.group_send(
+                        self.room_name,
+                        {
+                            'type': 'send_vcall',
+                            'vcall': 'vcall',
+                            'message': message,
+                            'sender': user.username
+                        }
+                    )                    
+
+                elif message:
                     # Save the message
                     await self.save_message(user, friend, message)
 
@@ -49,7 +71,7 @@ class Chat(AsyncWebsocketConsumer):
                         }
                     )
 
-                if vmessage:
+                elif vmessage:
                     audio_data = base64.b64decode(vmessage)
                     import uuid
                     file_name = f"vmessage_{uuid.uuid4().hex}.webm"
@@ -87,6 +109,13 @@ class Chat(AsyncWebsocketConsumer):
         vmessage = event['vmessage']
         sender = event['sender']
         await self.send(json.dumps({'type':'vmessage','vmessage': vmessage, 'sender': sender}))
+   
+    async def send_vcall(self, event):
+        # Send the message to WebSocket clients
+        sender = event['sender']
+        vcall = event['vcall']
+        message = event['message']
+        await self.send(json.dumps({'type':message,'vcall': vcall,'sender': sender}))
 
     async def user_joined(self, event):
         # Notify all users in the group about the new user
