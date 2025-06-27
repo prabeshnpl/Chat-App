@@ -74,7 +74,7 @@ if(id){
                 chatContent.insertAdjacentHTML(
                 'beforeend',
                 `<div class="message ${divClass}">
-                    <audio controls class="responsive-audio">
+                    <audio controls >
                         <source src="${data.vmessage}" type="audio/webm">
                         Your browser does not support the audio element.
                     </audio>
