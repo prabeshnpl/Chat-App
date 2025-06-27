@@ -99,6 +99,7 @@ if(id){
                     return;
                 } // Ignore offers from the current user  
                 console.log('Incoming call offer received:', data);
+                const offer = data.vcall;
                 const popup = document.getElementById("incomingCallBox");
                 const acceptBtn = document.getElementById("acceptBtn");
                 const rejectBtn = document.getElementById("rejectBtn");
@@ -111,7 +112,11 @@ if(id){
                 acceptBtn.onclick = () => {
                     popup.classList.add("hidden");
                     document.getElementById("callBox").classList.remove("hidden");
-                    handleOffer(data.vcall);                    
+                    if (typeof offer === "string") {
+                        offer = JSON.parse(offer);
+                    }
+                    console.log(offer);
+                    handleOffer(offer);                    
                 };
 
                 rejectBtn.onclick = () => {
@@ -125,7 +130,15 @@ if(id){
 
                 async function handleOffer(offer) {
                     localConnection = new RTCPeerConnection({
-                        iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
+                        iceServers: [
+                            { urls: "stun:stun.l.google.com:19302" }, // Public Google STUN
+                            { urls: "stun:stun1.l.google.com:19302" }, // Another Google STUN
+                            {
+                                urls: "turn:your.turn.server:3478",    // Your TURN server (for NAT traversal)
+                                username: "your-username",
+                                credential: "your-password"
+                            }
+                        ]
                     });
 
                     localConnection.ontrack = (event) => {
@@ -141,7 +154,7 @@ if(id){
                     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                     stream.getTracks().forEach(track => localConnection.addTrack(track, stream));
 
-                    await localConnection.setRemoteDescription(offer);
+                    await localConnection.setRemoteDescription(new RTCSessionDescription(offer));
                     // Add queued candidates if any
                     if (candidateQueue.length > 0) {
                         for (const candidate of candidateQueue) {
@@ -156,16 +169,18 @@ if(id){
             }
             else if (data.type == 'answer') {
                 if(data.sender == user){
-                    console.log('Ignoring offer from self');
+                    console.log('Ignoring answer from self');
                     return;
                 } // Ignore offers from the current user 
-                await localConnection.setRemoteDescription(new RTCSessionDescription(data.vcall));
-                const popup = document.getElementById("callBox");
-                popup.classList.remove("hidden");
+                console.log('Answer received:', data);
+                const answer = data.vcall;
+                document.getElementById("ringingBox").classList.add("hidden");
+                document.getElementById("callBox").classList.remove("hidden");
+                await localConnection.setRemoteDescription(new RTCSessionDescription(answer));
             }
             else if (data.type == 'candidate') {
                 if(data.sender == user){
-                    console.log('Ignoring offer from self');
+                    console.log('Ignoring candidate from self');
                     return;
                 } // Ignore offers from the current user 
                 if (localConnection) {
@@ -194,7 +209,7 @@ if(id){
                 document.getElementById('callBox').classList.add('hidden');
                 document.getElementById('incomingCallBox').classList.add('hidden');
 
-                alert(data.message || 'Call Ended');
+                alert('Call Ended');
             }
         }
 
@@ -323,8 +338,16 @@ if(id){
             };
 
             // Create a new RTCPeerConnection
-            let localConnection = new RTCPeerConnection({
-                iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
+            localConnection = new RTCPeerConnection({
+                iceServers: [
+                    { urls: "stun:stun.l.google.com:19302" }, // Public Google STUN
+                    { urls: "stun:stun1.l.google.com:19302" }, // Another Google STUN
+                    {
+                        urls: "turn:your.turn.server:3478",    // Your TURN server (for NAT traversal)
+                        username: "your-username",
+                        credential: "your-password"
+                    }
+                ]
             });
 
             // Provide permission to use microphone
