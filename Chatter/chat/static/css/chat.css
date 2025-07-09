@@ -3,7 +3,7 @@
     /* --primary-bg: #c7d4f7; */
     --secondary-bg: #ffffff;
     --accent-color: #a7d6f6;
-    --accent-color2: linear-gradient(to bottom, #7c7e7d, #416f55);
+    --accent-color2: linear-gradient(to bottom, #4a4848, #53936e);
     --hover-color: #2ecc71;
     --text-color: #000000;
     --text-secondary: #bdc3c7;
@@ -659,9 +659,8 @@ label{
 
 .message.received {
     align-self: flex-start;
-    background-color: rgba(118, 170, 222, 0.8);;
+    background-color: rgba(108, 121, 121, 0.8);;
     border-bottom-left-radius: 5px;
-
 }
 
 .message.sent {
@@ -669,6 +668,7 @@ label{
     background-color: var(--accent-color);
     border-bottom-right-radius: 5px;
 }
+
 
 /* Bottom message bar */
 .chat-bottom-message-bar {
@@ -910,5 +910,24 @@ label{
     }
     .send-icon{
         display: none;
+    }
+    .voice-call-popup {
+        position: fixed;
+        top: 40%;
+        left: 10%;
+        background-color: #fff;
+        border: 2px solid #007bff;
+        padding: 15px;
+        width: 80%;
+        border-radius: 10px;
+        box-shadow: 0 0 10px #888;
+        z-index: 999;
+    }
+    .voice-call-popup p,.voice-call-popup button{
+        width: 100%;
+    }
+    .message audio{
+        min-width:200px;
+        width:100%;
     }
 }

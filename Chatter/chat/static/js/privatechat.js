@@ -133,10 +133,25 @@ if(id){
                         iceServers: [
                             { urls: "stun:stun.l.google.com:19302" }, // Public Google STUN
                             { urls: "stun:stun1.l.google.com:19302" }, // Another Google STUN
+                            // {
+                            //     urls: "turn:your.turn.server:3478",    // Your TURN server (for NAT traversal)
+                            //     username: "your-username",
+                            //     credential: "your-password"
+                            // }
                             {
-                                urls: "turn:your.turn.server:3478",    // Your TURN server (for NAT traversal)
-                                username: "your-username",
-                                credential: "your-password"
+                                urls: [ "stun:bn-turn1.xirsys.com" ]
+                            },
+                            {
+                            username: "f2Y1cHpbIOHE6W01lipsFzOjhpVfkrgj0e2yXQStzmOs3DEijm44IVcUwH50Xq7uAAAAAGhukM1wcmFiZXNobnBs",
+                            credential: "0d9033d0-5cdd-11f0-99e3-0242ac140004",
+                            urls: [
+                                "turn:bn-turn1.xirsys.com:80?transport=udp",
+                                "turn:bn-turn1.xirsys.com:3478?transport=udp",
+                                "turn:bn-turn1.xirsys.com:80?transport=tcp",
+                                "turn:bn-turn1.xirsys.com:3478?transport=tcp",
+                                "turns:bn-turn1.xirsys.com:443?transport=tcp",
+                                "turns:bn-turn1.xirsys.com:5349?transport=tcp"
+                            ]
                             }
                         ]
                     });
@@ -245,8 +260,8 @@ if(id){
                     setTimeout(() => {
                         voiceMessage.style.opacity = '1'; // Fade in
                         attachFile.style.opacity = '1'; // Fade in
-                    }, 10);
-                }, 0); // Match the transition duration
+                    },1);
+                }, 1); // Match the transition duration
 
                 const message = e.target.message.value;
                 socket.send(JSON.stringify({message:message,receiverId:id,vmessage:''}));     
@@ -343,9 +358,19 @@ if(id){
                     { urls: "stun:stun.l.google.com:19302" }, // Public Google STUN
                     { urls: "stun:stun1.l.google.com:19302" }, // Another Google STUN
                     {
-                        urls: "turn:your.turn.server:3478",    // Your TURN server (for NAT traversal)
-                        username: "your-username",
-                        credential: "your-password"
+                        urls: [ "stun:bn-turn1.xirsys.com" ]
+                    },
+                    {
+                    username: "f2Y1cHpbIOHE6W01lipsFzOjhpVfkrgj0e2yXQStzmOs3DEijm44IVcUwH50Xq7uAAAAAGhukM1wcmFiZXNobnBs",
+                    credential: "0d9033d0-5cdd-11f0-99e3-0242ac140004",
+                    urls: [
+                        "turn:bn-turn1.xirsys.com:80?transport=udp",
+                        "turn:bn-turn1.xirsys.com:3478?transport=udp",
+                        "turn:bn-turn1.xirsys.com:80?transport=tcp",
+                        "turn:bn-turn1.xirsys.com:3478?transport=tcp",
+                        "turns:bn-turn1.xirsys.com:443?transport=tcp",
+                        "turns:bn-turn1.xirsys.com:5349?transport=tcp"
+                    ]
                     }
                 ]
             });
